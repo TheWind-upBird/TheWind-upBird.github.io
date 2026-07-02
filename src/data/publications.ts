@@ -37,9 +37,9 @@ export const publications: Pub[] = [
     venue: '', // double-blind: venue intentionally not named; the status badge already says "under review"
     year: '2026',
     status: 'review',
-    desc: 'First-author work: a training-free agent framework for analog transistor sizing, where every proposed action is verified against a precomputed sensitivity matrix before any simulator call. Comes with a 28-task benchmark verified to be unsolvable by random search. Details available on request.',
+    desc: 'A training-free agent framework for analog transistor sizing, where every proposed action is verified against a precomputed sensitivity matrix before any simulator call. Comes with a 28-task benchmark verified to be unsolvable by random search. Details available on request.',
     descZh:
-      '一作工作:面向模拟电路尺寸设计的免训练 Agent 框架,所有动作在调用仿真器前经灵敏度矩阵校验;附带 28 任务基准测试。论文审稿中,细节可联系索取。',
+      '面向模拟电路尺寸设计的免训练 Agent 框架,所有动作在调用仿真器前经灵敏度矩阵校验;附带 28 任务基准测试。论文审稿中,细节可联系索取。',
     links: [],
   },
   {
@@ -49,9 +49,9 @@ export const publications: Pub[] = [
     year: '2026',
     status: 'review',
     award: 'IEEE SSCS Code-a-Chip Winner @ VLSI 2026',
-    desc: 'Co-first-author work extending the agent framework to layout-aware automation: a self-evolving loop that generates SKY130-compatible netlists and expands each seed into full benchmark packages with automatic layout and post-layout evaluation. The open-source notebook won the IEEE SSCS Code-a-Chip award at VLSI 2026 (one of three winning teams).',
+    desc: 'Extends the agent framework to layout-aware automation: a self-evolving loop that generates SKY130-compatible netlists and expands each seed into full benchmark packages with automatic layout and post-layout evaluation. The open-source notebook won the IEEE SSCS Code-a-Chip award at VLSI 2026 (one of three winning teams).',
     descZh:
-      '共同一作:将 Agent 框架扩展至版图感知自动化,自动生成 SKY130 兼容网表并扩展为完整基准测试包。开源 notebook 获 VLSI 2026 IEEE SSCS Code-a-Chip 奖(三支获奖队伍之一)。',
+      '将 Agent 框架扩展至版图感知自动化,自动生成 SKY130 兼容网表并扩展为完整基准测试包。开源 notebook 获 VLSI 2026 IEEE SSCS Code-a-Chip 奖(三支获奖队伍之一)。',
     links: [],
   },
 ];
