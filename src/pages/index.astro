@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import PubCard from '../components/PubCard.astro';
+import { publications } from '../data/publications';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5);
+
+const fmt = (d: Date) =>
+  d.toISOString().slice(0, 10);
+---
+
+<Base title="Jiageng (Will) Wang — LLM Agents · Analog Design Automation">
+  <section class="hero">
+    <h1>Jiageng (Will) Wang</h1>
+    <p class="zh-name">王家赓</p>
+    <p class="lede">
+      I build <strong>LLM agents for analog circuit design automation</strong> —
+      training-free frameworks that ground language-model reasoning in physics and
+      tool execution. M.Sc. in Analytics at <a href="https://www.ntu.edu.sg/">NTU Singapore</a>,
+      research intern at <a href="https://www.a-star.edu.sg/i2r">A*STAR I²R</a>.
+      Previously: AIGC engineering at Keyone AI; B.Eng. in Aerospace Engineering at Sun Yat-sen University.
+    </p>
+    <p class="lede-zh">
+      研究方向为面向模拟电路设计自动化的 LLM Agent(免训练、物理约束、工具执行)。
+      NTU 分析学硕士在读, A*STAR I²R 研究实习。这里记录我的研究笔记、工程实践与观察思考。
+    </p>
+    <div class="contacts">
+      <a href="mailto:WANG2396@e.ntu.edu.sg">email</a>
+      <a href="https://www.linkedin.com/in/jiageng-wang-643a55379">linkedin</a>
+      <a href="https://github.com/TheWind-upBird">github</a>
+      <a href="/cv.pdf">cv</a>
+    </div>
+  </section>
+
+  <h2 class="net">Research <span class="label">selected work</span></h2>
+  {publications.map((pub) => <PubCard pub={pub} />)}
+
+  <h2 class="net">Writing <span class="label">latest posts</span></h2>
+  {
+    posts.map((post) => (
+      <div class="post-row">
+        <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
+        <span class="lang-tag">{post.data.lang === 'zh' ? '中' : 'EN'}</span>
+        <div>
+          <a class="title" href={`/blog/${post.id}/`}>{post.data.title}</a>
+          <p class="post-desc">{post.data.description}</p>
+        </div>
+      </div>
+    ))
+  }
+  <p style="font-family: var(--font-mono); font-size: 0.82rem; margin-top: 1rem;">
+    <a href="/blog/">all posts →</a>
+  </p>
+</Base>

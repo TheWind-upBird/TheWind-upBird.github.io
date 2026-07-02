@@ -1,0 +1,49 @@
+---
+import type { Pub } from '../data/publications';
+
+interface Props {
+  pub: Pub;
+  showZh?: boolean;
+}
+
+const { pub, showZh = false } = Astro.props;
+const authorsHtml = pub.authors.replace(
+  /Jiageng Wang/g,
+  '<strong>Jiageng Wang</strong>'
+);
+---
+
+<div class="pub">
+  <h3>{pub.title}</h3>
+  <div class="meta">
+    <span set:html={authorsHtml} />
+    {
+      pub.venue && (
+        <>
+          <span>·</span>
+          <span>{pub.venue}</span>
+        </>
+      )
+    }
+    {
+      pub.status === 'accepted' ? (
+        <span class="badge accepted">accepted</span>
+      ) : (
+        <span class="badge review">under review</span>
+      )
+    }
+    {pub.oral && <span class="badge oral">oral</span>}
+    {pub.award && <span class="badge award">{pub.award}</span>}
+  </div>
+  <p class="desc">{pub.desc}</p>
+  {showZh && pub.descZh && <p class="desc" style="color: var(--ink-soft); font-size: 0.9rem;">{pub.descZh}</p>}
+  {
+    pub.links.length > 0 && (
+      <div class="links">
+        {pub.links.map((l) => (
+          <a href={l.href}>[{l.label}]</a>
+        ))}
+      </div>
+    )
+  }
+</div>

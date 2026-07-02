@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import PubCard from '../components/PubCard.astro';
+import { publications } from '../data/publications';
+---
+
+<Base title="Publications — Jiageng Wang" description="Publications and research work by Jiageng Wang: LLM agents for analog circuit design automation.">
+  <h2 class="net" style="margin-top: 2.5rem;">Publications <span class="label">2026</span></h2>
+  <p style="color: var(--ink-soft); font-size: 0.95rem;">
+    My research focuses on training-free LLM agent frameworks for analog EDA:
+    grounding language-model reasoning in circuit physics, verifying actions before
+    tool execution, and adapting small open-weight models for on-premises deployment.
+    Two additional papers are currently under double-blind review — brief summaries
+    below; full details available on request.
+  </p>
+  {publications.map((pub) => <PubCard pub={pub} showZh={true} />)}
+
+  <h2 class="net">Awards <span class="label">selected</span></h2>
+  <ul style="padding-left: 1.2rem;">
+    <li><strong>IEEE SSCS Code-a-Chip Winner</strong>, VLSI Symposium 2026 — one of three winning teams, for an open-source, reproducible analog design automation notebook.</li>
+  </ul>
+</Base>
