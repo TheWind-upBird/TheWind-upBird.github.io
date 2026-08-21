@@ -9,19 +9,21 @@ const dataFiles = [
   'handcrafted-2-10.js','handcrafted-11-20.js','handcrafted-21-30.js',
   'hot100-31-32.js','hot100-33-34.js','hot100-35-40.js','hot100-41-45.js','hot100-46-50.js',
   'hot100-51-60.js','hot100-61-70.js','hot100-71-80.js','hot100-81-90.js','hot100-91-100.js',
-  'python-extra.js'
+  'quality-2-30-pass.js','python-extra.js'
 ];
 const runtimeFiles = [
   'engine-state.js','engine-cards.js','editor-runtime.js','handcrafted-cards.js',
   'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js'
 ];
 
+// Every JS file must parse. Runtime files depend on DOM globals, so do not execute them here.
 for (const file of [...dataFiles, ...runtimeFiles]) {
   const src = fs.readFileSync(path.join(root, file), 'utf8');
   try { new vm.Script(src, { filename: file }); }
   catch (err) { console.error(`JS syntax error in ${file}:`, err); process.exit(1); }
 }
 
+// Execute pure data/mutation files inside an isolated window object.
 const sandbox = { window: {}, console };
 vm.createContext(sandbox);
 for (const file of dataFiles) {
@@ -102,20 +104,31 @@ ps.forEach((p, idx) => {
   }
 });
 
-const added = ps.slice(30);
-if (added.length !== 70) fail(`new curriculum count = ${added.length}, expected 70`);
-for (const p of added) {
+// Two Sum remains its special, heavily iterated lesson. Every other problem is judge-tested here.
+const tested = ps.slice(1);
+if (tested.length !== 99) fail(`judge-tested curriculum count = ${tested.length}, expected 99`);
+for (const p of tested) {
   if (!/^(def |class |from |import )/m.test(p.pattern)) fail(`${p.slug} pattern does not look executable`);
   if (!String(p.judge).includes('check(')) fail(`${p.slug} judge has no check()`);
 }
 
+const earlyHard = [
+  'trapping-rain-water','sliding-window-maximum','minimum-window-substring','first-missing-positive',
+  'linked-list-cycle-ii','add-two-numbers','remove-nth-node-from-end-of-list','swap-nodes-in-pairs'
+];
+for (const slug of earlyHard) {
+  const p = ps.find(x=>x.slug===slug);
+  if (!p) fail(`missing early quality target: ${slug}`);
+  else if (/\n\s*pass\s*$/.test(p.starter||'')) fail(`${slug} still has pass-only starter after 2-30 quality pass`);
+}
+
 const exportData = {
   pythonExtra: w.HOT100_PY_EXTRA || '',
-  problems: added.map(p => ({slug:p.slug,title:p.title,pattern:p.pattern,judge:p.judge}))
+  problems: tested.map(p => ({slug:p.slug,title:p.title,pattern:p.pattern,judge:p.judge}))
 };
 fs.writeFileSync('/tmp/hot100-qa.json', JSON.stringify(exportData));
 
-console.log(`Hot100 structural QA: ${ps.length} problems, ${added.length} newly added.`);
+console.log(`Hot100 structural QA: ${ps.length} problems; Python judge set: ${tested.length} problems (2-100).`);
 if (warnings.length) {
   console.log(`Warnings (${warnings.length}):`);
   for (const x of warnings) console.log(`  - ${x}`);
