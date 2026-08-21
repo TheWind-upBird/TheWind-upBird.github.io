@@ -14,7 +14,7 @@ const dataFiles = [
 const runtimeFiles = [
   'engine-state.js','engine-cards.js','editor-runtime.js','handcrafted-cards.js',
   'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js',
-  'utility-pass.js','practice-snapshot-pass.js','adaptive-mode-pass.js','sw.js'
+  'utility-pass.js','practice-snapshot-pass.js','adaptive-mode-pass.js','adaptive-compat-pass.js','sw.js'
 ];
 
 for (const file of [...dataFiles, ...runtimeFiles]) {
