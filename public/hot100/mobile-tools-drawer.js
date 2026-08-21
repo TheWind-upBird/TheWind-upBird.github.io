@@ -1,6 +1,6 @@
 (()=>{
 function isMobile(){return window.matchMedia('(max-width:820px)').matches}
-function trigger(id){const el=document.getElementById(id);if(el)el.click()}
+function trigger(id){const el=document.getElementById(id);if(!el)return false;el.click();return true}
 function progressSummary(){
   const solved=Object.keys(state.solved||{}).filter(slug=>CURRICULUM.some(p=>p.slug===slug)).length;
   const due=(state.reviewQueue||[]).filter(r=>r.due<=new Date().toLocaleDateString('en-CA')).length;
@@ -64,7 +64,7 @@ function mount(){
   drawer.querySelectorAll('[data-tools-close]').forEach(x=>x.addEventListener('click',closeDrawer));
   document.getElementById('mobileExport')?.addEventListener('click',()=>{closeDrawer();trigger('exportProgress')});
   document.getElementById('mobileImport')?.addEventListener('click',()=>{closeDrawer();trigger('importProgress')});
-  document.getElementById('mobileInstall')?.addEventListener('click',()=>{closeDrawer();trigger('mobileInstallBtn')||trigger('installHot100')});
+  document.getElementById('mobileInstall')?.addEventListener('click',()=>{closeDrawer();if(!trigger('mobileInstallBtn'))trigger('installHot100')});
   document.getElementById('mobileReset')?.addEventListener('click',()=>{closeDrawer();trigger('resetBtn')});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
   window.addEventListener('resize',()=>{if(!isMobile())closeDrawer()});
