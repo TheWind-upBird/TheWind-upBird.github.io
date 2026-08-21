@@ -4,8 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#f6f7fb" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Hot100 Lab" />
   <title>Hot100 Learning Lab</title>
   <link rel="stylesheet" href="./style.css" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
   <style>
     .stepRow{display:grid;grid-template-columns:38px 1fr auto;gap:13px;align-items:center;padding:15px 17px;box-shadow:none}.stepRow small{display:block;color:var(--muted);font-size:12px}.stepNo{width:33px;height:33px;border-radius:10px;background:#f1f2f6;display:grid;place-items:center;font-size:12px;font-weight:700}.problemRow{padding:15px 16px;box-shadow:none;display:flex;justify-content:space-between;align-items:center;gap:14px}.problemRow small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.status{font-size:12px;white-space:nowrap}.knowledge{padding:18px;box-shadow:none}.knowledge h3{margin:4px 0}.knowledge p{font-size:12px}.knowledge.locked{opacity:.55}.levelList{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.levelList span{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:var(--muted)}.levelList span.done{background:var(--goodbg);border-color:#b8e0ca;color:var(--good)}.reviewRow{padding:15px 16px;display:flex;justify-content:space-between;align-items:center;gap:14px;box-shadow:none}.reviewRow small{display:block;color:var(--muted);font-size:12px}.runner.pass{background:var(--goodbg);border-color:#b8e0ca;color:var(--good)}.runner.fail{background:var(--badbg);border-color:#f1c0bb;color:var(--bad)}.choice.selected,.rate.selected{border-color:#b9b9ff;background:var(--accent2)}
     @media(max-width:820px){.stepRow{grid-template-columns:36px 1fr}.stepRow>span:last-child{display:none}}
