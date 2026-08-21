@@ -13,7 +13,7 @@ const dataFiles = [
 ];
 const runtimeFiles = [
   'engine-state.js','engine-cards.js','editor-runtime.js','handcrafted-cards.js',
-  'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js','utility-pass.js'
+  'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js','utility-pass.js','practice-snapshot-pass.js'
 ];
 
 // Every JS file must parse. Runtime files depend on DOM globals, so do not execute them here.
