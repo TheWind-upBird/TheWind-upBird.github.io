@@ -13,17 +13,28 @@ const dataFiles = [
 ];
 const runtimeFiles = [
   'engine-state.js','engine-cards.js','editor-runtime.js','handcrafted-cards.js',
-  'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js','utility-pass.js','practice-snapshot-pass.js'
+  'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js',
+  'utility-pass.js','practice-snapshot-pass.js','adaptive-mode-pass.js','sw.js'
 ];
 
-// Every JS file must parse. Runtime files depend on DOM globals, so do not execute them here.
 for (const file of [...dataFiles, ...runtimeFiles]) {
   const src = fs.readFileSync(path.join(root, file), 'utf8');
   try { new vm.Script(src, { filename: file }); }
   catch (err) { console.error(`JS syntax error in ${file}:`, err); process.exit(1); }
 }
 
-// Execute pure data/mutation files inside an isolated window object.
+let manifest;
+try { manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8')); }
+catch (err) { console.error('Invalid PWA manifest:', err); process.exit(1); }
+if (!manifest.name || !manifest.start_url || manifest.display !== 'standalone' || !Array.isArray(manifest.icons) || !manifest.icons.length) {
+  console.error('PWA manifest is missing required app fields.');
+  process.exit(1);
+}
+if (!fs.existsSync(path.join(root, 'icon.svg'))) {
+  console.error('PWA icon.svg is missing.');
+  process.exit(1);
+}
+
 const sandbox = { window: {}, console };
 vm.createContext(sandbox);
 for (const file of dataFiles) {
@@ -104,7 +115,6 @@ ps.forEach((p, idx) => {
   }
 });
 
-// Two Sum remains its special, heavily iterated lesson. Every other problem is judge-tested here.
 const tested = ps.slice(1);
 if (tested.length !== 99) fail(`judge-tested curriculum count = ${tested.length}, expected 99`);
 for (const p of tested) {
@@ -122,6 +132,11 @@ for (const slug of earlyHard) {
   else if (/\n\s*pass\s*$/.test(p.starter||'')) fail(`${slug} still has pass-only starter after 2-30 quality pass`);
 }
 
+const adaptiveSrc = fs.readFileSync(path.join(root, 'adaptive-mode-pass.js'), 'utf8');
+for (const marker of ['独立练习','weaknessScore','10 分钟','manifest.webmanifest','serviceWorker']) {
+  if (!adaptiveSrc.includes(marker)) fail(`adaptive layer missing marker: ${marker}`);
+}
+
 const exportData = {
   pythonExtra: w.HOT100_PY_EXTRA || '',
   problems: tested.map(p => ({slug:p.slug,title:p.title,pattern:p.pattern,judge:p.judge}))
@@ -129,6 +144,7 @@ const exportData = {
 fs.writeFileSync('/tmp/hot100-qa.json', JSON.stringify(exportData));
 
 console.log(`Hot100 structural QA: ${ps.length} problems; Python judge set: ${tested.length} problems (2-100).`);
+console.log('PWA/adaptive QA: manifest, icon, service worker and adaptive layer present.');
 if (warnings.length) {
   console.log(`Warnings (${warnings.length}):`);
   for (const x of warnings) console.log(`  - ${x}`);
