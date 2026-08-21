@@ -6,6 +6,7 @@ on:
       - 'public/hot100/**'
       - 'scripts/hot100-qa.mjs'
       - 'scripts/hot100-qa.py'
+      - 'scripts/hot100-pwa-qa.mjs'
       - '.github/workflows/hot100-qa.yml'
   workflow_dispatch:
 
@@ -25,5 +26,7 @@ jobs:
           python-version: '3.12'
       - name: Check curriculum structure and teaching content
         run: node scripts/hot100-qa.mjs
+      - name: Check adaptive modes and PWA offline package
+        run: node scripts/hot100-pwa-qa.mjs
       - name: Run Python reference solutions against onsite judges
         run: python scripts/hot100-qa.py
