@@ -13,17 +13,15 @@ const dataFiles = [
 ];
 const runtimeFiles = [
   'engine-state.js','engine-cards.js','editor-runtime.js','handcrafted-cards.js',
-  'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js'
+  'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js'
 ];
 
-// First: every JS file must at least parse. Runtime files depend on DOM globals, so do not execute them here.
 for (const file of [...dataFiles, ...runtimeFiles]) {
   const src = fs.readFileSync(path.join(root, file), 'utf8');
   try { new vm.Script(src, { filename: file }); }
   catch (err) { console.error(`JS syntax error in ${file}:`, err); process.exit(1); }
 }
 
-// Then execute only pure data files inside an isolated window object.
 const sandbox = { window: {}, console };
 vm.createContext(sandbox);
 for (const file of dataFiles) {
@@ -99,7 +97,6 @@ ps.forEach((p, idx) => {
       if (!nonEmpty(q.explain) || q.explain.trim().length < 8) warn(`#${pos} ${p.slug} handcrafted explanation is short`);
     }
 
-    // Scan both problem data and hand-authored lesson data for known filler wording.
     const fullText = JSON.stringify({p,cfg,intro,lesson});
     for (const phrase of badPhrases) if (fullText.includes(phrase)) fail(`#${pos} ${p.slug} contains filler phrase: ${phrase}`);
   }
