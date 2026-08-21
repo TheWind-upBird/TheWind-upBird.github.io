@@ -1,6 +1,6 @@
-const CACHE='hot100-shell-v3';
+const CACHE='hot100-shell-v4';
 const SHELL=[
-  './','./index.html','./style.css','./manifest.webmanifest','./icon.svg',
+  './','./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg',
   './curriculum-1.js','./curriculum-2.js','./curriculum-3.js','./curriculum-4.js','./curriculum-5.js','./curriculum-6.js',
   './handcrafted-patterns.js','./lesson-overrides.js','./beginner-intuition.js',
   './handcrafted-2-10.js','./handcrafted-11-20.js','./handcrafted-21-30.js',
