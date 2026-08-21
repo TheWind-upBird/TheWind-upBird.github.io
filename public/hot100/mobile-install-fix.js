@@ -38,6 +38,11 @@ function mount(){
   const style=document.createElement('style');style.textContent=`#mobileInstallBtn{display:none}.installHelpSheet{position:fixed;inset:0;background:rgba(20,24,35,.38);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:16px}.installHelpCard{width:min(460px,100%);background:#fff;border-radius:20px;padding:18px;border:1px solid var(--line);box-shadow:0 24px 70px rgba(20,24,35,.25)}.installHelpHead{display:flex;justify-content:space-between;align-items:center;gap:12px}.installHelpCard p{font-size:13px;line-height:1.65}.installSteps{display:grid;gap:7px;margin:12px 0}.installSteps span{border:1px solid var(--line);border-radius:11px;padding:10px 11px;font-size:13px;line-height:1.55}.installHelpCard>.primary{width:100%;margin-top:5px}@media(max-width:820px){#mobileInstallBtn{display:inline-grid;place-items:center;width:42px;height:42px;min-width:42px;padding:0;border-radius:12px;font-size:20px;line-height:1}.topbar .utilityMenu{display:none}.topbar>div:last-child{display:flex;align-items:center;gap:6px;flex:0 0 auto}.topbar>div:first-child{min-width:0;white-space:nowrap}.topbar>div:first-child>b{font-size:14px}.topbar .tag{font-size:11px;padding:3px 6px}}`;
   document.head.appendChild(style);
 }
+function loadMobileTools(){
+  if(document.querySelector('script[data-mobile-tools]'))return;
+  const s=document.createElement('script');s.src='./mobile-tools-drawer.js';s.dataset.mobileTools='1';document.body.appendChild(s);
+}
 window.addEventListener('appinstalled',()=>{installedFired=true;document.getElementById('mobileInstallBtn')?.remove()});
 mount();
+loadMobileTools();
 })();
