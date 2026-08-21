@@ -1,0 +1,21 @@
+{
+  "name": "Hot100 Learning Lab",
+  "short_name": "Hot100 Lab",
+  "description": "Hot100 learning, coding and review workspace.",
+  "lang": "zh-CN",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f7fb",
+  "theme_color": "#5b5bd6",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
