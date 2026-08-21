@@ -4,6 +4,10 @@ const bySlug=Object.fromEntries(ps.map(p=>[p.slug,p]));
 const hc=window.HOT100_HANDCRAFTED||{};
 const intros=window.HOT100_BEGINNER_INTUITION||{};
 
+// 页面方法标签要和真正教授的解法一致，避免“标题说DP、正文却学栈/中心扩展”。
+if(bySlug['longest-palindromic-substring']) bySlug['longest-palindromic-substring'].topic='中心扩展';
+if(bySlug['longest-valid-parentheses']) bySlug['longest-valid-parentheses'].topic='栈';
+
 // 对结构型难题给真正能接着写的起始骨架，减少从“看懂”突然跳到空白编辑器的落差。
 if(bySlug['lru-cache']) bySlug['lru-cache'].starter=`class Node:
     def __init__(self, key=0, value=0):
@@ -100,12 +104,7 @@ if(intros['median-of-two-sorted-arrays']) Object.assign(intros['median-of-two-so
 });
 if(hc['median-of-two-sorted-arrays']){
   hc['median-of-two-sorted-arrays'].syntax.summary='不要先记四个边界变量。先画两排有序数字和两条切线：i 决定 A 左边拿几个，j=half-i 自动决定 B 左边拿几个；二分只是在移动 A 的切线。';
-  hc['median-of-two-sorted-arrays'].meaning={
-    q:'为什么只检查切口旁边的 Aleft、Aright、Bleft、Bright，就能判断整个左右两半是否有序？',
-    options:['因为 A、B 各自本来就有序：每边内部无需再检查，只要排除两个“跨数组越界”关系即可','因为中位数只和4个数有关，其他数可以乱序','因为二分查找只能比较4个数'],
-    answer:0,
-    explain:'A 自己左边≤自己右边、B 也一样，这是输入有序直接保证的。真正可能破坏“左半≤右半”的只有 Aleft>Bright 或 Bleft>Aright，所以检查这两个交叉条件就够。'
-  };
+  hc['median-of-two-sorted-arrays'].meaning={q:'为什么只检查切口旁边的 Aleft、Aright、Bleft、Bright，就能判断整个左右两半是否有序？',options:['因为 A、B 各自本来就有序：每边内部无需再检查，只要排除两个“跨数组越界”关系即可','因为中位数只和4个数有关，其他数可以乱序','因为二分查找只能比较4个数'],answer:0,explain:'A 自己左边≤自己右边、B 也一样，这是输入有序直接保证的。真正可能破坏“左半≤右半”的只有 Aleft>Bright 或 Bleft>Aright，所以检查这两个交叉条件就够。'};
   hc['median-of-two-sorted-arrays'].full.guide='先允许自己用 O(m+n) 合并法确认答案，再画两排数组做“切一半”的练习。真正写二分时只盯三件事：左侧总数固定、两个交叉条件、切线太左/太右时怎么移动。';
   bySlug['median-of-two-sorted-arrays'].starter=`def findMedianSortedArrays(nums1, nums2):
     A, B = nums1, nums2
@@ -141,7 +140,7 @@ if(hc['find-median-from-data-stream']){
 if(intros['edit-distance']) Object.assign(intros['edit-distance'],{
   title:'先只研究“最后一个字符怎么处理”',
   example:"把 'horse' 变成 'ros'",
-  observe:"别试图一次规划完整过程。看两个前缀的最后字符：如果一样，这一位不用花新操作；如果不一样，最后一步只可能是删除、插入或替换。",
+  observe:'别试图一次规划完整过程。看两个前缀的最后字符：如果一样，这一位不用花新操作；如果不一样，最后一步只可能是删除、插入或替换。',
   question:'二维表里的“上、左、左上”为什么刚好对应三种操作？',
   answer:'dp[i][j] 表示 word1 前 i 个字符变成 word2 前 j 个字符。删除 word1 最后字符后看 dp[i-1][j]；为了补上 word2 最后字符，先看 dp[i][j-1]；替换两个末尾则先看 dp[i-1][j-1]。三者再 +1。'
 });
@@ -159,12 +158,7 @@ if(intros['find-the-duplicate-number']) Object.assign(intros['find-the-duplicate
 });
 if(hc['find-the-duplicate-number']){
   hc['find-the-duplicate-number'].syntax.summary='把 nums[i] 当成链表里的 node.next。于是 slow=nums[slow] 是走一步，fast=nums[nums[fast]] 是走两步；第一次相遇只说明进入了环，第二阶段才定位环入口，也就是重复数。';
-  hc['find-the-duplicate-number'].meaning={
-    q:'在 nums=[1,3,4,2,2] 中，为什么“重复数 2”不是随便一个环内节点，而正好对应环入口？',
-    options:['因为两个不同下标都指向下标2，路径第一次发生汇合的位置就是2；从这里往后进入同一循环','因为2是数组里最小的重复值','因为快指针第一次一定在2相遇'],
-    answer:0,
-    explain:'重复值意味着“多个位置的 next 都等于同一个下标”。这个汇合点就是从前缀路径进入循环的位置。快慢指针第一次相遇的位置不一定是2，Floyd 第二阶段才会回到入口2。'
-  };
+  hc['find-the-duplicate-number'].meaning={q:'在 nums=[1,3,4,2,2] 中，为什么“重复数 2”不是随便一个环内节点，而正好对应环入口？',options:['因为两个不同下标都指向下标2，路径第一次发生汇合的位置就是2；从这里往后进入同一循环','因为2是数组里最小的重复值','因为快指针第一次一定在2相遇'],answer:0,explain:'重复值意味着“多个位置的 next 都等于同一个下标”。这个汇合点就是从前缀路径进入循环的位置。快慢指针第一次相遇的位置不一定是2，Floyd 第二阶段才会回到入口2。'};
   hc['find-the-duplicate-number'].full.guide='先在纸上把 [1,3,4,2,2] 画成 0→1→3→2→4→2，再完全照搬环形链表 II 的两阶段逻辑。只有“next”从 node.next 换成 nums[index]。';
   bySlug['find-the-duplicate-number'].starter=`def findDuplicate(nums):
     slow = fast = nums[0]
@@ -201,7 +195,8 @@ function pythonGlossary(code){
   if(code.includes('divmod(')) add('divmod(a, b)','一次返回 (a // b, a % b)，也就是商和余数。');
   if(code.includes("float('inf')")) add("float('inf')",'Python 的正无穷；做 min 比较时常拿它表示“目前还没有可行答案”。');
   if(code.includes('[:]')||/\[[^\]\n]*:[^\]\n]*\]/.test(code)) add('切片 a[l:r]','取下标 l 到 r-1；右端 r 不包含。a[:] 常用来复制一层列表。');
-  if(/(?:=|return\s+|\()\s*\[[^\]\n]+\bfor\b[^\]\n]+\]/.test(code)) add('列表推导式','例如 [f(x) for x in xs]：把循环生成结果直接组成新列表。');
+  const hasComprehension=code.split('\n').some(line=>{const f=line.indexOf(' for '),o=line.indexOf('['),c=line.lastIndexOf(']');return o>=0&&f>o&&c>f});
+  if(hasComprehension) add('列表推导式','例如 [f(x) for x in xs]：把循环生成结果直接组成新列表。');
   if(/\b[a-zA-Z_]\w*\s*,\s*[a-zA-Z_]\w*\s*=/.test(code)) add('a, b = ...','多变量解包：右边产生几个值，按位置一次赋给左边几个变量。');
   if(code.includes('//')) add('//','整数除法，结果向下取整；二分里的 (left+right)//2 用它得到整数下标。');
   if(code.includes('%')) add('%','取余数；常用于奇偶、循环位置和逐位运算。');
