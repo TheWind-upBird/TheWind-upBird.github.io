@@ -1,4 +1,4 @@
-const CACHE='hot100-shell-v2';
+const CACHE='hot100-shell-v3';
 const SHELL=[
   './','./index.html','./style.css','./manifest.webmanifest','./icon.svg',
   './curriculum-1.js','./curriculum-2.js','./curriculum-3.js','./curriculum-4.js','./curriculum-5.js','./curriculum-6.js',
@@ -8,7 +8,7 @@ const SHELL=[
   './hot100-51-60.js','./hot100-61-70.js','./hot100-71-80.js','./hot100-81-90.js','./hot100-91-100.js',
   './quality-2-30-pass.js','./engine-state.js','./engine-cards.js','./python-extra.js','./editor-runtime.js',
   './handcrafted-cards.js','./quality-pass.js','./quality-content-pass.js','./two-sum-cards.js','./engine-ui.js',
-  './product-pass.js','./utility-pass.js','./practice-snapshot-pass.js','./adaptive-mode-pass.js','./adaptive-compat-pass.js'
+  './product-pass.js','./utility-pass.js','./practice-snapshot-pass.js','./adaptive-mode-pass.js','./adaptive-compat-pass.js','./mobile-install-fix.js'
 ];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(SHELL.map(url=>cache.add(url)))).then(()=>self.skipWaiting()));
