@@ -22,33 +22,33 @@
       <button class="sideBtn" data-page="knowledge">知识地图</button>
       <button class="sideBtn" data-page="review">复习</button>
     </div></div>
-    <div class="sideBottom"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Hot100</span><span id="sideSolved">0 / 30</span></div><div class="sideTrack"><div id="sideProgress"></div></div><small>先把思路和代码连起来。</small></div>
+    <div class="sideBottom"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Hot100</span><span id="sideSolved">0 / 100</span></div><div class="sideTrack"><div id="sideProgress"></div></div><small>先把思路和代码连起来。</small></div>
   </aside>
 
   <div class="shell">
     <header class="topbar"><div><b>Hot100 Learning Lab</b><span class="tag">移动端友好</span></div><div><button class="ghost" id="resumeBtn">继续学习</button> <button class="ghost" id="resetBtn">↻</button></div></header>
     <main class="content">
       <section class="page active" id="page-home">
-        <div class="eyebrow">第 1 / 30 题 · 哈希表</div>
+        <div class="eyebrow">第 1 / 100 题 · 哈希表</div>
         <h1 class="title">两数之和，<br>从理解到写出代码。</h1>
         <p class="subtitle">依次学习概念、Python 语法、代码补空、执行过程和完整题。</p>
-        <div class="card hero"><div class="heroMain"><span class="tag" style="margin-left:0">当前题 · 1 / 30</span><h2>两数之和 · Two Sum</h2><p class="muted">哈希表 · Easy · 8 步</p><div class="heroActions"><button class="primary" id="startDeckBtn">开始这道题 →</button><span class="muted" style="font-size:12px">每题完成后可直接进入下一题</span></div></div><div class="deckArt"><div class="mini"></div><div class="mini"></div><div class="mini"><small>Step 1</small><b>两数之和<br>哈希表</b></div></div></div>
-        <div class="summaryGrid"><div class="card summary"><small>当前题进度</small><strong id="todayDone">0 / 8</strong><small>完成后进入下一步</small></div><div class="card summary"><small>已完成题目</small><strong id="homeSolved">0</strong><small>前 30 道题</small></div><div class="card summary"><small>待复习</small><strong id="homeReview">0</strong><small>根据完成情况安排</small></div></div>
+        <div class="card hero"><div class="heroMain"><span class="tag" style="margin-left:0">当前题 · 1 / 100</span><h2>两数之和 · Two Sum</h2><p class="muted">哈希表 · Easy · 8 步</p><div class="heroActions"><button class="primary" id="startDeckBtn">开始这道题 →</button><span class="muted" style="font-size:12px">每题完成后可直接进入下一题</span></div></div><div class="deckArt"><div class="mini"></div><div class="mini"></div><div class="mini"><small>Step 1</small><b>两数之和<br>哈希表</b></div></div></div>
+        <div class="summaryGrid"><div class="card summary"><small>当前题进度</small><strong id="todayDone">0 / 8</strong><small>完成后进入下一步</small></div><div class="card summary"><small>已完成题目</small><strong id="homeSolved">0</strong><small>Hot100 全部题目</small></div><div class="card summary"><small>待复习</small><strong id="homeReview">0</strong><small>根据完成情况安排</small></div></div>
         <div class="sectionHead"><div><h3>这道题的学习顺序</h3><p>沿用第一题已经确定的学习方式。</p></div></div><div class="todaySteps" id="todaySteps"></div>
       </section>
 
       <section class="page" id="page-deck">
-        <div class="deckHead"><div style="display:flex;align-items:center;gap:10px"><button class="round" data-page="home">←</button><div><div class="eyebrow">第 1 / 30 题 · 哈希表</div><b>两数之和</b></div></div><div class="muted" style="font-size:13px"><span id="cardIndex">1</span> / <span id="cardTotal">8</span></div></div>
+        <div class="deckHead"><div style="display:flex;align-items:center;gap:10px"><button class="round" data-page="home">←</button><div><div class="eyebrow">第 1 / 100 题 · 哈希表</div><b>两数之和</b></div></div><div class="muted" style="font-size:13px"><span id="cardIndex">1</span> / <span id="cardTotal">8</span></div></div>
         <div class="deckTrack"><div id="deckFill"></div></div><article class="card studyCard" id="studyCard"></article>
       </section>
 
       <section class="page" id="page-problems">
-        <div class="eyebrow">PROBLEM BANK</div><h1 class="title">题库</h1><p class="subtitle">前 30 道题全部使用同一套 8 步学习流程。</p>
+        <div class="eyebrow">PROBLEM BANK</div><h1 class="title">题库</h1><p class="subtitle">Hot100 100 道题全部使用同一套 8 步学习流程。</p>
         <div class="filterRow"><button class="filter active">全部</button><button class="filter">未开始</button><button class="filter">学习中</button><button class="filter">已掌握</button></div><div class="problemList" id="problemList"></div>
       </section>
 
       <section class="page" id="page-knowledge">
-        <div class="eyebrow">KNOWLEDGE MAP</div><h1 class="title">知识地图</h1><p class="subtitle">按知识点查看这 30 道题的完成情况。</p><div class="knowledgeGrid" id="knowledgeGrid"></div>
+        <div class="eyebrow">KNOWLEDGE MAP</div><h1 class="title">知识地图</h1><p class="subtitle">按知识点查看这 100 道题的完成情况。</p><div class="knowledgeGrid" id="knowledgeGrid"></div>
       </section>
 
       <section class="page" id="page-review">
@@ -67,8 +67,20 @@
 <script src="./curriculum-6.js"></script>
 <script src="./handcrafted-patterns.js"></script>
 <script src="./lesson-overrides.js"></script>
+<script src="./hot100-31-32.js"></script>
+<script src="./hot100-33-34.js"></script>
+<script src="./hot100-35-40.js"></script>
+<script src="./hot100-41-45.js"></script>
+<script src="./hot100-46-50.js"></script>
+<script src="./hot100-51-60.js"></script>
+<script src="./hot100-61-70.js"></script>
+<script src="./hot100-71-80.js"></script>
+<script src="./hot100-81-90.js"></script>
+<script src="./hot100-91-100.js"></script>
 <script src="./engine-state.js"></script>
 <script src="./engine-cards.js"></script>
+<script src="./python-extra.js"></script>
+<script src="./editor-runtime.js"></script>
 <script src="./beginner-intuition.js"></script>
 <script src="./handcrafted-2-10.js"></script>
 <script src="./handcrafted-11-20.js"></script>
