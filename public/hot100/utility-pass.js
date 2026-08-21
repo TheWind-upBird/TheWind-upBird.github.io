@@ -7,6 +7,10 @@ function ensureUtilityState(){
 }
 ensureUtilityState();
 
+// Any save, including the existing reset flow, should repair optional product fields first.
+const utilityBaseSave=save;
+save=function(){ensureUtilityState();return utilityBaseSave()};
+
 const EXPORT_KEYS=['currentProblem','deckIndex','completedCards','solved','codes','reviewQueue','lastPage','positions','lastTouched','attempts','reviewing','notes'];
 function safeStateSnapshot(){
   const out={};
@@ -100,7 +104,7 @@ renderCard=function(){
   mountNote(current());
 };
 
-function insertEditorText(ed,text,cursorBack=0){
+function insertEditorText(ed,text){
   const start=ed.selectionStart,end=ed.selectionEnd;
   const selected=ed.value.slice(start,end);
   let insert=text;
@@ -109,7 +113,7 @@ function insertEditorText(ed,text,cursorBack=0){
   else if(text==='{}')insert=`{${selected}}`;
   const before=ed.value.slice(0,start),after=ed.value.slice(end);
   ed.value=before+insert+after;
-  let pos=start+insert.length-cursorBack;
+  let pos=start+insert.length;
   if(!selected&&(text==='()'||text==='[]'||text==='{}'))pos=start+1;
   ed.selectionStart=ed.selectionEnd=pos;
   ed.dispatchEvent(new Event('input',{bubbles:true}));ed.focus();
@@ -139,8 +143,6 @@ bindEditorCard=function(p){
   mountEditorUtilities();
 };
 
-const utilityBaseReset=$('resetBtn')?.onclick;
-// engine-ui uses addEventListener, so ensure new fields also recover after a reset by checking on every page render.
 const utilityBaseShowPage=showPage;
 showPage=function(name){ensureUtilityState();return utilityBaseShowPage(name)};
 
