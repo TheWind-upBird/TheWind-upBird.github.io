@@ -1,9 +1,10 @@
 (()=>{
-function isMobile(){return window.matchMedia('(max-width:820px)').matches}
 function trigger(id){const el=document.getElementById(id);if(!el)return false;el.click();return true}
+function isStandalone(){return window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true}
 function progressSummary(){
   const solved=Object.keys(state.solved||{}).filter(slug=>CURRICULUM.some(p=>p.slug===slug)).length;
-  const due=(state.reviewQueue||[]).filter(r=>r.due<=new Date().toLocaleDateString('en-CA')).length;
+  const now=new Date(),y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0'),d=String(now.getDate()).padStart(2,'0'),today=`${y}-${m}-${d}`;
+  const due=(state.reviewQueue||[]).filter(r=>r.due<=today).length;
   return {solved,due};
 }
 function closeDrawer(){document.getElementById('mobileToolsDrawer')?.classList.remove('open');document.body.classList.remove('toolsOpen')}
@@ -13,6 +14,8 @@ function openDrawer(){
   const solved=document.getElementById('mobileToolSolved'),due=document.getElementById('mobileToolDue');
   if(solved)solved.textContent=`${s.solved} / ${CURRICULUM.length}`;
   if(due)due.textContent=String(s.due);
+  const appGroup=document.getElementById('mobileInstall')?.closest('.mobileToolsGroup');
+  if(appGroup)appGroup.hidden=isStandalone();
   drawer.classList.add('open');document.body.classList.add('toolsOpen');
 }
 function moveSnapshotSection(){
@@ -25,16 +28,16 @@ function mount(){
   const actions=document.querySelector('.topbar>div:last-child');if(!actions)return;
 
   const menuBtn=document.createElement('button');
-  menuBtn.id='mobileToolsBtn';menuBtn.className='ghost mobileToolsBtn';menuBtn.type='button';menuBtn.setAttribute('aria-label','打开工具菜单');
+  menuBtn.id='mobileToolsBtn';menuBtn.className='ghost mobileToolsBtn';menuBtn.type='button';menuBtn.setAttribute('aria-label','打开工具菜单');menuBtn.title='工具与设置';
   menuBtn.innerHTML='<span></span><span></span><span></span>';
   actions.appendChild(menuBtn);
 
   const drawer=document.createElement('div');drawer.id='mobileToolsDrawer';drawer.className='mobileToolsDrawer';
   drawer.innerHTML=`
     <div class="mobileToolsScrim" data-tools-close></div>
-    <aside class="mobileToolsPanel" aria-label="Hot100 工具">
+    <aside class="mobileToolsPanel" aria-label="Hot100 工具与设置">
       <div class="mobileToolsHead">
-        <div><small>HOT100 LAB</small><h2>工具</h2></div>
+        <div><small>HOT100 LAB</small><h2>工具与设置</h2></div>
         <button class="round" type="button" data-tools-close aria-label="关闭">×</button>
       </div>
       <div class="mobileToolsStats">
@@ -67,24 +70,27 @@ function mount(){
   document.getElementById('mobileInstall')?.addEventListener('click',()=>{closeDrawer();if(!trigger('mobileInstallBtn'))trigger('installHot100')});
   document.getElementById('mobileReset')?.addEventListener('click',()=>{closeDrawer();trigger('resetBtn')});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
-  window.addEventListener('resize',()=>{if(!isMobile())closeDrawer()});
 
   const style=document.createElement('style');style.textContent=`
-  .mobileToolsBtn,.mobileToolsDrawer{display:none}
+  /* One utility surface on every screen: Continue + hamburger in the top bar. */
+  .topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}
+  .mobileToolsBtn{display:inline-flex!important;width:42px;height:42px;min-width:42px;padding:0;border-radius:12px;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+  .mobileToolsBtn span{display:block;width:17px;height:2px;border-radius:99px;background:currentColor;transition:transform .18s ease,opacity .18s ease}
+  body.toolsOpen .mobileToolsBtn span:nth-child(1){transform:translateY(6px) rotate(45deg)}body.toolsOpen .mobileToolsBtn span:nth-child(2){opacity:0}body.toolsOpen .mobileToolsBtn span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+  .mobileToolsDrawer{display:block;position:fixed;inset:0;z-index:300;pointer-events:none}
+  .mobileToolsScrim{position:absolute;inset:0;background:rgba(15,18,28,.36);opacity:0;transition:opacity .2s ease}
+  .mobileToolsPanel{position:absolute;right:0;top:0;bottom:0;width:min(390px,92vw);background:#f7f8fb;border-left:1px solid var(--line);transform:translateX(102%);transition:transform .24s ease;overflow-y:auto;padding:22px 16px 28px;box-shadow:-16px 0 50px rgba(25,29,45,.16)}
+  .mobileToolsDrawer.open{pointer-events:auto}.mobileToolsDrawer.open .mobileToolsScrim{opacity:1}.mobileToolsDrawer.open .mobileToolsPanel{transform:translateX(0)}body.toolsOpen{overflow:hidden}
+  .mobileToolsHead{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 14px}.mobileToolsHead small{font-size:10px;letter-spacing:.1em;color:var(--muted)}.mobileToolsHead h2{font-size:24px;margin:1px 0 0}.mobileToolsStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}.mobileToolsStats>div{background:var(--panel,#fff);border:1px solid var(--line);border-radius:14px;padding:12px 13px}.mobileToolsStats small{display:block;color:var(--muted);font-size:11px}.mobileToolsStats b{font-size:18px}
+  .mobileToolsGroup{background:var(--panel,#fff);border:1px solid var(--line);border-radius:16px;padding:5px 11px;margin-bottom:11px}.mobileToolsLabel{font-size:10px;color:var(--muted);letter-spacing:.06em;padding:8px 4px 5px}.mobileToolRow{width:100%;display:grid;grid-template-columns:35px 1fr 14px;gap:9px;align-items:center;border:0;border-top:1px solid var(--line);background:transparent;padding:12px 3px;text-align:left;color:var(--text)}.mobileToolsLabel+.mobileToolRow{border-top:0}.mobileToolRow .toolIcon{width:31px;height:31px;border-radius:10px;background:var(--accent2);color:var(--accent);display:grid;place-items:center;font-size:17px;font-weight:700}.mobileToolRow>span:nth-child(2){display:grid;gap:2px}.mobileToolRow b{font-size:13px}.mobileToolRow small{color:var(--muted);font-size:10px;line-height:1.4}.mobileToolRow em{font-style:normal;color:#a0a5b0;font-size:20px}.mobileToolRow.danger{color:var(--bad)}.mobileToolRow.danger .toolIcon{background:var(--badbg);color:var(--bad)}.dangerGroup{margin-top:18px}
+  #mobileSnapshotSlot .snapshotSection{border:0;margin:0;padding:0 3px 6px}#mobileSnapshotSlot .snapshotHead{padding:4px 0 7px}#mobileSnapshotSlot .snapshotHead>span b{font-size:13px}#mobileSnapshotSlot .snapshotHead>span small{font-size:10px;color:var(--muted)}#mobileSnapshotSlot .snapshotHead .secondary{padding:7px 9px;font-size:11px;border-radius:9px}#mobileSnapshotSlot .snapshotItem{box-shadow:none}#mobileSnapshotSlot .snapshotList{max-height:220px;overflow:auto}
   @media(max-width:820px){
     .topbar{padding:0 14px}.topbar>div:first-child{min-width:0;display:flex;align-items:center}.topbar>div:first-child>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.topbar .tag{display:none}
-    .topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}
-    .mobileToolsBtn{display:inline-flex!important;width:42px;height:42px;padding:0;border-radius:12px;align-items:center;justify-content:center;flex-direction:column;gap:4px}
-    .mobileToolsBtn span{display:block;width:17px;height:2px;border-radius:99px;background:currentColor}
-    .mobileToolsDrawer{display:block;position:fixed;inset:0;z-index:300;pointer-events:none}
-    .mobileToolsScrim{position:absolute;inset:0;background:rgba(15,18,28,.36);opacity:0;transition:opacity .2s ease}
-    .mobileToolsPanel{position:absolute;right:0;top:0;bottom:0;width:min(88vw,390px);background:#f7f8fb;border-left:1px solid var(--line);transform:translateX(102%);transition:transform .24s ease;overflow-y:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));box-shadow:-16px 0 50px rgba(25,29,45,.16)}
-    .mobileToolsDrawer.open{pointer-events:auto}.mobileToolsDrawer.open .mobileToolsScrim{opacity:1}.mobileToolsDrawer.open .mobileToolsPanel{transform:translateX(0)}body.toolsOpen{overflow:hidden}
-    .mobileToolsHead{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 14px}.mobileToolsHead small{font-size:10px;letter-spacing:.1em;color:var(--muted)}.mobileToolsHead h2{font-size:24px;margin:1px 0 0}.mobileToolsStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}.mobileToolsStats>div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px}.mobileToolsStats small{display:block;color:var(--muted);font-size:11px}.mobileToolsStats b{font-size:18px}
-    .mobileToolsGroup{background:#fff;border:1px solid var(--line);border-radius:16px;padding:5px 11px;margin-bottom:11px}.mobileToolsLabel{font-size:10px;color:var(--muted);letter-spacing:.06em;padding:8px 4px 5px}.mobileToolRow{width:100%;display:grid;grid-template-columns:35px 1fr 14px;gap:9px;align-items:center;border:0;border-top:1px solid var(--line);background:transparent;padding:12px 3px;text-align:left;color:var(--text)}.mobileToolsLabel+.mobileToolRow{border-top:0}.mobileToolRow .toolIcon{width:31px;height:31px;border-radius:10px;background:var(--accent2);color:var(--accent);display:grid;place-items:center;font-size:17px;font-weight:700}.mobileToolRow>span:nth-child(2){display:grid;gap:2px}.mobileToolRow b{font-size:13px}.mobileToolRow small{color:var(--muted);font-size:10px;line-height:1.4}.mobileToolRow em{font-style:normal;color:#a0a5b0;font-size:20px}.mobileToolRow.danger{color:var(--bad)}.mobileToolRow.danger .toolIcon{background:var(--badbg);color:var(--bad)}.dangerGroup{margin-top:18px}
-    #mobileSnapshotSlot .snapshotSection{border:0;margin:0;padding:0 3px 6px}#mobileSnapshotSlot .snapshotHead{padding:4px 0 7px}#mobileSnapshotSlot .snapshotHead>span b{font-size:13px}#mobileSnapshotSlot .snapshotHead>span small{font-size:10px;color:var(--muted)}#mobileSnapshotSlot .snapshotHead .secondary{padding:7px 9px;font-size:11px;border-radius:9px}#mobileSnapshotSlot .snapshotItem{box-shadow:none}#mobileSnapshotSlot .snapshotList{max-height:220px;overflow:auto}
+    .topbar>div:last-child{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+    .mobileToolsPanel{width:min(88vw,390px);padding:calc(18px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom))}
   }
   `;document.head.appendChild(style);
+  window.dispatchEvent(new CustomEvent('hot100toolsready'));
 }
 mount();
 })();
