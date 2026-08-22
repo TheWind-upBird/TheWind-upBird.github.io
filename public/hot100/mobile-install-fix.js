@@ -42,12 +42,16 @@ function loadMobileTools(){
   if(document.querySelector('script[data-mobile-tools]'))return;
   const s=document.createElement('script');s.src='./mobile-tools-drawer.js';s.dataset.mobileTools='1';document.body.appendChild(s);
 }
+function loadWa2Design(){
+  if(document.querySelector('script[data-wa2-design]')){loadMobileTools();return}
+  const s=document.createElement('script');s.src='./wa2-design-pass.js';s.dataset.wa2Design='1';s.addEventListener('load',loadMobileTools,{once:true});s.addEventListener('error',loadMobileTools,{once:true});document.body.appendChild(s);
+}
 function loadThemeAndTools(){
   try{const t=localStorage.getItem('hot100-theme-v1');if(t&&['day','dark','wa2'].includes(t))document.documentElement.dataset.theme=t}catch(e){}
-  if(window.HOT100_THEME){loadMobileTools();return}
+  if(window.HOT100_THEME){loadWa2Design();return}
   const old=document.querySelector('script[data-hot100-theme-script]');
-  if(old){old.addEventListener('load',loadMobileTools,{once:true});return}
-  const s=document.createElement('script');s.src='./theme-pass.js';s.dataset.hot100ThemeScript='1';s.addEventListener('load',loadMobileTools,{once:true});s.addEventListener('error',loadMobileTools,{once:true});document.body.appendChild(s);
+  if(old){old.addEventListener('load',loadWa2Design,{once:true});return}
+  const s=document.createElement('script');s.src='./theme-pass.js';s.dataset.hot100ThemeScript='1';s.addEventListener('load',loadWa2Design,{once:true});s.addEventListener('error',loadWa2Design,{once:true});document.body.appendChild(s);
 }
 window.addEventListener('appinstalled',()=>{installedFired=true;document.getElementById('mobileInstallBtn')?.remove();document.getElementById('mobileInstall')?.closest('.mobileToolsGroup')?.remove()});
 mount();
