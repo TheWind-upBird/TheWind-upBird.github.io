@@ -34,9 +34,11 @@ for(const marker of ['独立练习','weaknessScore','10 分钟','20 分钟','ser
 for(const marker of ['refinedWeakness','refinedQuickPlan','task.end','apple-touch-icon']){
   if(!compat.includes(marker))fail(`adaptive-compat-pass.js missing refinement marker: ${marker}`);
 }
-for(const marker of ['mobileToolsDrawer','导出学习数据','导入学习数据','mobileSnapshotSlot','添加到主屏幕','重置全部进度']){
+for(const marker of ['mobileToolsDrawer','导出学习数据','导入学习数据','mobileSnapshotSlot','添加到主屏幕','重置全部进度','工具与设置','hot100toolsready']){
   if(!drawer.includes(marker))fail(`mobile-tools-drawer.js missing marker: ${marker}`);
 }
+if(!drawer.includes('.topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}'))fail('desktop legacy utility controls must be hidden behind the shared drawer');
+if(drawer.includes('.mobileToolsBtn,.mobileToolsDrawer{display:none}'))fail('shared utility drawer must not be mobile-only');
 for(const marker of ['白天','黑夜','白色相簿2','hot100-theme-v1','data-hot100-theme','state.attempts.__ui.theme','theme-color']){
   if(!theme.includes(marker))fail(`theme-pass.js missing marker: ${marker}`);
 }
@@ -60,6 +62,6 @@ if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromC
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg']){
   if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
 }
-if(!sw.includes("CACHE='hot100-shell-v7'"))fail('service worker cache version must be v7');
+if(!sw.includes("CACHE='hot100-shell-v8'"))fail('service worker cache version must be v8');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} local JS assets covered; mobile tools, three themes, and enhanced WA2 design included.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} local JS assets covered; shared desktop/mobile tools drawer, three themes, and enhanced WA2 design included.`);
