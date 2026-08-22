@@ -21,8 +21,7 @@ async function install(){
   if(info.isEdgeAndroid){showHelp('edge');return}
   if(info.isIOS){showHelp('ios');return}
   if(installPrompt){
-    installedFired=false;
-    installPrompt.prompt();
+    installedFired=false;installPrompt.prompt();
     let result=null;try{result=await installPrompt.userChoice}catch(e){}
     installPrompt=null;
     if(result?.outcome==='accepted')setTimeout(()=>{if(!installedFired&&!isStandalone())showHelp('blocked')},12000);
@@ -35,25 +34,9 @@ function mount(){
   const actions=document.querySelector('.topbar>div:last-child');if(!actions||document.getElementById('mobileInstallBtn'))return;
   const btn=document.createElement('button');btn.id='mobileInstallBtn';btn.className='ghost';btn.type='button';btn.innerHTML='<span aria-hidden="true">⇩</span>';btn.title='添加到桌面';btn.setAttribute('aria-label','添加 Hot100 到桌面');btn.addEventListener('click',install);
   const reset=document.getElementById('resetBtn');actions.insertBefore(btn,reset||null);
-  const style=document.createElement('style');style.textContent=`#mobileInstallBtn{display:none}.installHelpSheet{position:fixed;inset:0;background:rgba(20,24,35,.38);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:16px}.installHelpCard{width:min(460px,100%);background:var(--panel);color:var(--text);border-radius:20px;padding:18px;border:1px solid var(--line);box-shadow:0 24px 70px rgba(20,24,35,.25)}.installHelpHead{display:flex;justify-content:space-between;align-items:center;gap:12px}.installHelpCard p{font-size:13px;line-height:1.65}.installSteps{display:grid;gap:7px;margin:12px 0}.installSteps span{border:1px solid var(--line);border-radius:11px;padding:10px 11px;font-size:13px;line-height:1.55}.installHelpCard>.primary{width:100%;margin-top:5px}@media(max-width:820px){#mobileInstallBtn{display:inline-grid;place-items:center;width:42px;height:42px;min-width:42px;padding:0;border-radius:12px;font-size:20px;line-height:1}.topbar .utilityMenu{display:none}.topbar>div:last-child{display:flex;align-items:center;gap:6px;flex:0 0 auto}.topbar>div:first-child{min-width:0;white-space:nowrap}.topbar>div:first-child>b{font-size:14px}.topbar .tag{font-size:11px;padding:3px 6px}}`;
-  document.head.appendChild(style);
+  const style=document.createElement('style');style.textContent=`#mobileInstallBtn{display:none!important}.installHelpSheet{position:fixed;inset:0;background:rgba(20,24,35,.38);z-index:400;display:flex;align-items:flex-end;justify-content:center;padding:16px}.installHelpCard{width:min(460px,100%);background:var(--panel);color:var(--text);border-radius:20px;padding:18px;border:1px solid var(--line);box-shadow:0 24px 70px rgba(20,24,35,.25)}.installHelpHead{display:flex;justify-content:space-between;align-items:center;gap:12px}.installHelpCard p{font-size:13px;line-height:1.65}.installSteps{display:grid;gap:7px;margin:12px 0}.installSteps span{border:1px solid var(--line);border-radius:11px;padding:10px 11px;font-size:13px;line-height:1.55}.installHelpCard>.primary{width:100%;margin-top:5px}`;document.head.appendChild(style);
 }
-function loadMobileTools(){
-  if(document.querySelector('script[data-mobile-tools]'))return;
-  const s=document.createElement('script');s.src='./mobile-tools-drawer.js';s.dataset.mobileTools='1';document.body.appendChild(s);
-}
-function loadWa2Design(){
-  if(document.querySelector('script[data-wa2-design]')){loadMobileTools();return}
-  const s=document.createElement('script');s.src='./wa2-design-pass.js';s.dataset.wa2Design='1';s.addEventListener('load',loadMobileTools,{once:true});s.addEventListener('error',loadMobileTools,{once:true});document.body.appendChild(s);
-}
-function loadThemeAndTools(){
-  try{const t=localStorage.getItem('hot100-theme-v1');if(t&&['day','dark','wa2'].includes(t))document.documentElement.dataset.theme=t}catch(e){}
-  if(window.HOT100_THEME){loadWa2Design();return}
-  const old=document.querySelector('script[data-hot100-theme-script]');
-  if(old){old.addEventListener('load',loadWa2Design,{once:true});return}
-  const s=document.createElement('script');s.src='./theme-pass.js';s.dataset.hot100ThemeScript='1';s.addEventListener('load',loadWa2Design,{once:true});s.addEventListener('error',loadWa2Design,{once:true});document.body.appendChild(s);
-}
+window.HOT100_INSTALL={open:install,isStandalone};
 window.addEventListener('appinstalled',()=>{installedFired=true;document.getElementById('mobileInstallBtn')?.remove();document.getElementById('mobileInstall')?.closest('.mobileToolsGroup')?.remove()});
 mount();
-loadThemeAndTools();
 })();
