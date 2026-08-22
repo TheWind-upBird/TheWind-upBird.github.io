@@ -30,6 +30,9 @@ for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-s
 if(!index.includes('id="mobileToolsBtn"'))fail('index.html must contain the permanent hamburger tools button');
 if(index.includes('id="resumeBtn"'))fail('redundant resume button must not exist in the top bar');
 if(!index.includes('.topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}'))fail('index.html must hide legacy desktop data/reset/install controls before JS runs');
+if(!index.includes("localStorage.getItem('hot100-wa2-motion-v1')")||!index.includes('dataset.wa2MotionPref'))fail('index.html must restore WA2 motion preference before first paint');
+if(!index.includes('html[data-theme="wa2"] body{background:linear-gradient'))fail('WA2 first paint must use a snow-free base background');
+if(!index.includes('html[data-theme="wa2"][data-wa2-motion-pref="off"] #wa2FallingSnow'))fail('WA2 off state must be enforced in first-paint CSS');
 if(install.includes("s.src='./mobile-tools-drawer.js'")||install.includes("s.src='./theme-pass.js'"))fail('install helper must not dynamically bootstrap the UI stack');
 
 for(const marker of ['独立练习','weaknessScore','10 分钟','20 分钟','serviceWorker.register'])if(!adaptive.includes(marker))fail(`adaptive-mode-pass.js missing marker: ${marker}`);
@@ -57,7 +60,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v13'"))fail('service worker cache version must be v13');
+if(!sw.includes("CACHE='hot100-shell-v14'"))fail('service worker cache version must be v14');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; WA2 off is immediate on mobile, removes all snow/motion layers, and network-first updates remain enabled.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; WA2 base is snow-free, off is enforced before first paint, and network-first updates remain enabled.`);
