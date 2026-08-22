@@ -14,16 +14,17 @@ const drawer=read('mobile-tools-drawer.js');
 const theme=read('theme-pass.js');
 const wa2=read('wa2-design-pass.js');
 const polish=read('wa2-polish-pass.js');
+const motion=read('wa2-motion-pass.js');
 const scene=read('wa2-winter-scene.svg');
 const sw=read('sw.js');
 const manifest=JSON.parse(read('manifest.webmanifest'));
 const icon=read('icon.svg');
 
-for(const [name,src] of [['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['sw.js',sw]]){
+for(const [name,src] of [['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['wa2-motion-pass.js',motion],['sw.js',sw]]){
   try{new vm.Script(src,{filename:name})}catch(err){fail(`${name} syntax error: ${err.message}`)}
 }
 
-for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','mobile-tools-drawer.js']){
+for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','mobile-tools-drawer.js','wa2-motion-pass.js']){
   if(!index.includes(`src="./${file}"`))fail(`${file} must be loaded statically by index.html`);
 }
 if(!index.includes('id="mobileToolsBtn"'))fail('index.html must contain the permanent hamburger tools button');
@@ -47,6 +48,8 @@ for(const marker of ['白天','黑夜','白色相簿2','hot100-theme-v1','data-h
 for(const selector of ['html[data-theme="dark"]','html[data-theme="wa2"]'])if(!theme.includes(selector))fail(`theme-pass.js missing selector: ${selector}`);
 for(const marker of ['WHITE ALBUM 2','WINTER STUDY EDITION','wa2AlbumArt','wa2TrackRow','wa2KnowledgeCard','wa2SnowField','prefers-reduced-motion'])if(!wa2.includes(marker))fail(`wa2-design-pass.js missing visual marker: ${marker}`);
 for(const marker of ['wa2StatusStrip','wa2-winter-scene.svg','WINTER LOG','NOW PLAYING','TRACK LIST','wa2CornerRail','--wa2-serif','wa2FallingSnow','wa2VisibleFall','wa2MoonSweep'])if(!polish.includes(marker))fail(`wa2-polish-pass.js missing polish marker: ${marker}`);
+for(const marker of ['hot100-wa2-motion-v1','白二动态效果','Web Animations','wa2MotionControl','prefers-reduced-motion','wa2MotionLight'])if(!motion.includes(marker)&&marker!=='Web Animations')fail(`wa2-motion-pass.js missing motion marker: ${marker}`);
+if(!motion.includes('.animate(['))fail('wa2-motion-pass.js must use Web Animations API for reliable snowfall');
 if(!scene.includes('<svg')||!scene.includes('viewBox="0 0 900 600"'))fail('WA2 winter scene SVG is invalid');
 
 if(manifest.display!=='standalone')fail('manifest display must be standalone');
@@ -60,7 +63,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v10'"))fail('service worker cache version must be v10');
+if(!sw.includes("CACHE='hot100-shell-v11'"))fail('service worker cache version must be v11');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; shared hamburger, visible WA2 snowfall, and network-first updates included.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; shared hamburger, WA2 motion controls, Web Animations snowfall, and network-first updates included.`);
