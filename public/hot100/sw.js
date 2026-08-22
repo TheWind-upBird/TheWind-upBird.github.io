@@ -1,4 +1,4 @@
-const CACHE='hot100-shell-v12';
+const CACHE='hot100-shell-v13';
 const SHELL=[
   './','./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg','./wa2-winter-scene.svg',
   './curriculum-1.js','./curriculum-2.js','./curriculum-3.js','./curriculum-4.js','./curriculum-5.js','./curriculum-6.js',
