@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-label="Original winter night illustration">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1b2d"/>
+      <stop offset="0.52" stop-color="#244763"/>
+      <stop offset="0.78" stop-color="#7ea5bf"/>
+      <stop offset="1" stop-color="#dceaf3"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fdfefe"/>
+      <stop offset="1" stop-color="#dbe8f1"/>
+    </linearGradient>
+    <linearGradient id="window" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff3bc"/>
+      <stop offset="1" stop-color="#d3b56e"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="38%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.72" stop-color="#edf5fa"/>
+      <stop offset="1" stop-color="#bfd5e4"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+  </defs>
+  <rect width="900" height="600" fill="url(#sky)"/>
+  <circle cx="735" cy="105" r="54" fill="#dceef9" opacity=".18" filter="url(#glow)"/>
+  <circle cx="735" cy="105" r="39" fill="url(#moon)"/>
+  <g fill="#fff" opacity=".88">
+    <circle cx="118" cy="82" r="2"/><circle cx="192" cy="141" r="1.5"/><circle cx="318" cy="95" r="1.7"/>
+    <circle cx="430" cy="153" r="1.3"/><circle cx="522" cy="78" r="1.6"/><circle cx="655" cy="168" r="1.4"/>
+  </g>
+  <path d="M0 355 L110 315 L205 343 L328 286 L458 340 L590 300 L735 332 L900 280 L900 440 L0 440 Z" fill="#173047" opacity=".68"/>
+  <path d="M0 390 C145 356 248 374 356 347 C470 318 610 365 900 326 L900 486 L0 486 Z" fill="#dce9f1" opacity=".9"/>
+  <g transform="translate(105 248)">
+    <rect x="0" y="52" width="360" height="170" rx="3" fill="#10283c"/>
+    <rect x="24" y="22" width="312" height="54" fill="#183650"/>
+    <path d="M12 52 L180 0 L348 52 Z" fill="#1a3a54"/>
+    <g fill="url(#window)" opacity=".9">
+      <rect x="35" y="86" width="34" height="28" rx="2"/><rect x="92" y="86" width="34" height="28" rx="2"/>
+      <rect x="235" y="86" width="34" height="28" rx="2"/><rect x="292" y="86" width="34" height="28" rx="2"/>
+      <rect x="35" y="138" width="34" height="28" rx="2"/><rect x="292" y="138" width="34" height="28" rx="2"/>
+    </g>
+    <rect x="151" y="126" width="58" height="96" fill="#0b1d2c"/>
+    <rect x="165" y="144" width="30" height="48" fill="#27475f"/>
+  </g>
+  <g stroke="#0f273a" stroke-linecap="round" fill="none">
+    <path d="M655 390 C647 310 650 244 665 180" stroke-width="12"/>
+    <path d="M662 258 C618 232 592 214 569 184" stroke-width="6"/>
+    <path d="M661 283 C708 250 740 230 764 193" stroke-width="6"/>
+    <path d="M649 324 C612 300 586 287 550 276" stroke-width="5"/>
+    <path d="M670 317 C718 291 760 286 800 264" stroke-width="5"/>
+    <path d="M573 184 L548 148 M575 185 L582 146 M764 193 L784 158 M764 194 L746 154" stroke-width="3"/>
+  </g>
+  <path d="M0 432 C125 405 237 423 357 411 C508 396 645 419 900 387 L900 600 L0 600 Z" fill="url(#snow)"/>
+  <path d="M0 470 C145 451 294 469 445 448 C585 430 718 447 900 424" fill="none" stroke="#c6dbe8" stroke-width="3" opacity=".75"/>
+  <g opacity=".72" fill="#fff">
+    <circle cx="74" cy="180" r="3"/><circle cx="147" cy="224" r="2"/><circle cx="286" cy="177" r="2.6"/>
+    <circle cx="390" cy="240" r="2"/><circle cx="512" cy="204" r="3"/><circle cx="616" cy="116" r="2"/>
+    <circle cx="698" cy="230" r="2.7"/><circle cx="820" cy="174" r="2.3"/><circle cx="856" cy="276" r="3"/>
+    <circle cx="240" cy="304" r="1.8"/><circle cx="540" cy="314" r="2.2"/>
+  </g>
+  <g transform="translate(0 520)">
+    <rect width="900" height="80" fill="#f7fafc"/>
+    <g stroke="#b8c9d4" stroke-width="2">
+      <path d="M100 0 V80 M200 0 V80 M300 0 V80 M400 0 V80 M500 0 V80 M600 0 V80 M700 0 V80 M800 0 V80"/>
+    </g>
+    <g fill="#14283a">
+      <rect x="68" y="0" width="58" height="48" rx="0 0 5 5"/><rect x="168" y="0" width="58" height="48" rx="0 0 5 5"/>
+      <rect x="368" y="0" width="58" height="48" rx="0 0 5 5"/><rect x="468" y="0" width="58" height="48" rx="0 0 5 5"/>
+      <rect x="568" y="0" width="58" height="48" rx="0 0 5 5"/><rect x="768" y="0" width="58" height="48" rx="0 0 5 5"/>
+    </g>
+  </g>
+  <rect x="18" y="18" width="864" height="564" rx="18" fill="none" stroke="#dfeaf2" stroke-opacity=".3"/>
+</svg>
