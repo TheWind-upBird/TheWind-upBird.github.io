@@ -62,7 +62,6 @@ html[data-theme="wa2"] .wa2Masthead:after{content:'❄';position:absolute;right:
 .wa2MastTop{display:flex;align-items:center;gap:9px;font-size:9px;letter-spacing:.18em;color:#6e8498}.wa2MastTop i{height:1px;width:46px;background:#9bb8d0}.wa2MastBottom{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:8px}.wa2MastBottom b{font-size:16px;font-weight:650;color:#28435f}.wa2MastBottom small{font-size:9px;letter-spacing:.12em;color:#8aa0b5}
 html[data-theme="wa2"] #page-home>.eyebrow{color:#6e8da8;letter-spacing:.04em}
 html[data-theme="wa2"] #page-home>.title{font-weight:760;letter-spacing:-.035em;color:#162a40;text-shadow:0 1px rgba(255,255,255,.7)}
-html[data-theme="wa2"] #page-home>.title:after{content:'WHITE ALBUM 2 · HOT100';display:block;margin-top:10px;font-size:9px;letter-spacing:.22em;font-weight:650;color:#86a1b8}
 
 html[data-theme="wa2"] .wa2Hero{position:relative;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(245px,.75fr);gap:28px;overflow:hidden;padding:30px!important;background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(232,243,251,.91))!important}
 html[data-theme="wa2"] .wa2Hero:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#b7d2e5,#5d8eb7 52%,#b7d2e5)}
