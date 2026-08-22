@@ -43,6 +43,7 @@ if(!drawer.includes('.topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInsta
 for(const marker of ['白天','黑夜','白色相簿2','hot100-theme-v1','data-hot100-theme','state.attempts.__ui.theme','theme-color'])if(!theme.includes(marker))fail(`theme-pass.js missing marker: ${marker}`);
 for(const selector of ['html[data-theme="dark"]','html[data-theme="wa2"]'])if(!theme.includes(selector))fail(`theme-pass.js missing selector: ${selector}`);
 for(const marker of ['WHITE ALBUM 2','WINTER STUDY EDITION','wa2AlbumArt','wa2TrackRow','wa2KnowledgeCard','wa2SnowField','prefers-reduced-motion'])if(!wa2.includes(marker))fail(`wa2-design-pass.js missing visual marker: ${marker}`);
+if(wa2.includes("#page-home>.title:after{content:'WHITE ALBUM 2 · HOT100'"))fail('obsolete WA2 title pseudo-label must be removed from wa2-design-pass.js at source');
 for(const marker of ['wa2StatusStrip','wa2-winter-scene.svg','WINTER LOG','NOW PLAYING','TRACK LIST','wa2CornerRail','--wa2-serif','wa2FallingSnow','wa2VisibleFall','wa2MoonSweep'])if(!polish.includes(marker))fail(`wa2-polish-pass.js missing polish marker: ${marker}`);
 for(const marker of ['hot100-wa2-motion-v1','白二动态效果','wa2MotionControl','prefers-reduced-motion','wa2MotionLight','hideAllEffects','data-wa2-motion-pref','currentPref'])if(!motion.includes(marker))fail(`wa2-motion-pass.js missing motion marker: ${marker}`);
 for(const marker of ['removeWa2TitleAfterRule','你为什么这么熟练啊','content:none!important'])if(!ui.includes(marker))fail(`ui-polish-pass.js missing UI cleanup marker: ${marker}`);
@@ -62,7 +63,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v15'"))fail('service worker cache version must be v15');
+if(!sw.includes("CACHE='hot100-shell-v16'"))fail('service worker cache version must be v16');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; WA2 title subtitle cleanup is enforced, off is enforced before first paint, and network-first updates remain enabled.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; obsolete WA2 title pseudo-label is removed at source, off is enforced before first paint, and network-first updates remain enabled.`);
