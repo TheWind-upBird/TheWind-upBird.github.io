@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const root=path.resolve('public/hot100');
 const read=file=>fs.readFileSync(path.join(root,file),'utf8');
-const fail=msg=>{console.error('Hot100 adaptive/PWA QA failed:',msg);process.exit(1)};
+const fail=msg=>{console.error('SolveShift adaptive/PWA QA failed:',msg);process.exit(1)};
 
 const index=read('index.html');
 const adaptive=read('adaptive-mode-pass.js');
@@ -53,6 +53,11 @@ if(index.includes('Hot100 100 道题全部使用同一套 8 步学习流程'))fa
 if(index.includes('随着熟练度提高，提示会逐渐减少'))fail('outdated automatic fading copy must not appear in static HTML');
 if(install.includes("s.src='./mobile-tools-drawer.js'")||install.includes("s.src='./theme-pass.js'"))fail('install helper must not dynamically bootstrap the UI stack');
 
+if(!index.includes('<title>SolveShift</title>')||!index.includes('apple-mobile-web-app-title" content="SolveShift"'))fail('static document branding must be SolveShift');
+if(!index.includes('<div class="logo">S</div>')||!index.includes('<b>SolveShift</b>'))fail('visible shell branding must use SolveShift');
+if(index.includes('Hot100 Learning Lab')||index.includes('<b>Hot100 Lab</b>'))fail('legacy Hot100 product branding must not remain in the shell');
+if(!install.includes('添加 SolveShift 到桌面')||!drawer.includes('SOLVESHIFT')||!drawer.includes('安装 SolveShift'))fail('install and tools UI must use SolveShift branding');
+
 for(const marker of ['独立练习','weaknessScore','10 分钟','20 分钟','serviceWorker.register'])if(!adaptive.includes(marker))fail(`adaptive-mode-pass.js missing marker: ${marker}`);
 for(const marker of ['refinedWeakness','refinedQuickPlan','task.end','apple-touch-icon'])if(!compat.includes(marker))fail(`adaptive-compat-pass.js missing refinement marker: ${marker}`);
 for(const marker of ['mobileToolsDrawer','导出学习数据','导入学习数据','mobileSnapshotSlot','添加到主屏幕','重置全部进度','工具与设置','hot100toolsready'])if(!drawer.includes(marker))fail(`mobile-tools-drawer.js missing marker: ${marker}`);
@@ -83,18 +88,19 @@ for(const marker of ['cards.length||CARD_COUNT','activeDone','p.slug===\'two-sum
 for(const marker of ['productTodayPlan','productOnboarding','学习设置','Build a path that fits you','hot100toolsready','event-driven'])if(!shell.includes(marker))fail(`product-shell.js missing product-shell marker: ${marker}`);
 if(shell.includes('MutationObserver'))fail('product-shell.js must remain event-driven; global DOM observers caused severe UI lockups');
 
+if(manifest.name!=='SolveShift'||manifest.short_name!=='SolveShift')fail('manifest name and short_name must be SolveShift');
 if(manifest.display!=='standalone')fail('manifest display must be standalone');
 if(!manifest.start_url||!manifest.scope)fail('manifest needs start_url and scope');
 if(!Array.isArray(manifest.icons)||manifest.icons.length<2)fail('manifest needs regular and maskable icons');
 if(!manifest.icons.some(x=>String(x.purpose||'').includes('maskable')))fail('manifest needs a maskable icon');
-if(!icon.includes('<svg')||!icon.includes('viewBox="0 0 512 512"'))fail('icon.svg is invalid');
+if(!icon.includes('<svg')||!icon.includes('viewBox="0 0 512 512"')||!icon.includes('SolveShift icon'))fail('SolveShift icon.svg is invalid');
 
 const localScripts=[...index.matchAll(/<script\s+src="\.\/([^"]+\.js)"/g)].map(m=>`./${m[1]}`);
 const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v24'"))fail('service worker cache version must be v24');
+if(!sw.includes("CACHE='hot100-shell-v25'"))fail('service worker cache version must be v25');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; WA2 uses an explicit winter-scene image, the library is pattern-first with mode-at-entry, Today mixes review/progress/weakness signals, and all product UI layers remain event-driven.`);
+console.log(`SolveShift adaptive/PWA QA passed: ${requiredCache.length} assets covered; Hot100 remains a content track, WA2 uses an explicit winter-scene image, the library is pattern-first with mode-at-entry, Today mixes review/progress/weakness signals, and all product UI layers remain event-driven.`);
