@@ -23,7 +23,8 @@ function modeDock(index,p,kind='library'){
 function bindModeButtons(root){root?.querySelectorAll('[data-library-mode]').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();Modes.openInMode(Number(btn.dataset.libraryIndex),btn.dataset.libraryMode)}))}
 function enhanceProblemBank(){
   if(enhancing)return;const list=document.getElementById('problemList');if(!list)return;
-  const rows=[...list.querySelectorAll(':scope > [data-problem]')];if(!rows.length){document.getElementById('productLibrarySummary')?.remove();return}
+  const rows=[...list.querySelectorAll(':scope > [data-problem]')];
+  if(!rows.length){if(list.querySelector('.libraryPatternGroup'))return;document.getElementById('productLibrarySummary')?.remove();return}
   enhancing=true;
   try{
     const groups=new Map();
