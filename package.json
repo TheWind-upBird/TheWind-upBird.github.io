@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "qa:hot100-pwa": "node scripts/hot100-pwa-qa.mjs",
+    "qa:hot100-scaffold": "node scripts/hot100-scaffold-qa.mjs",
+    "qa:hot100": "npm run qa:hot100-pwa && npm run qa:hot100-scaffold"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.11",
