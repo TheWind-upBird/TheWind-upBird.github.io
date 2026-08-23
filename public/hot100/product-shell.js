@@ -4,7 +4,7 @@ if(!Profile||!Policy||!Catalog)return;
 const escHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let lastTodaySignature='';
 function locale(){return Profile.get().locale||'zh-CN'}
-function typeLabel(type){const zh={learn:'新学',practice:'巩固',review:'复习',prove:'独立'},en={learn:'Learn',practice:'Practice',review:'Review',prove:'Prove'};return locale()==='en-US'?en[type]||type:zh[type]||type}
+function typeLabel(type){const zh={learn:'新学',continue:'继续',practice:'巩固',review:'复习',weak:'薄弱点',prove:'独立'},en={learn:'Learn',continue:'Continue',practice:'Practice',review:'Review',weak:'Weak spot',prove:'Prove'};return locale()==='en-US'?en[type]||type:zh[type]||type}
 function currentProblemSafe(){try{return typeof current==='function'?current():(window.HOT100_CURRICULUM||[])[state?.currentProblem||0]}catch(e){return null}}
 function todaySignature(profile,p){
   try{
@@ -20,7 +20,7 @@ function renderToday(force=false){
   if(!box){box=document.createElement('section');box.id='productTodayPlan';box.className='productTodayPlan card';const hero=home.querySelector('.hero');hero?.insertAdjacentElement('beforebegin',box)}
   const plan=Policy.todayPlan(profile.dailyMinutes||20),pattern=p?Catalog.patternFor(p):null,isEn=profile.locale==='en-US';
   const tasks=plan.tasks.map((x,i)=>`<button class="productTask" data-product-task="${x.index}"><span><small>${String(i+1).padStart(2,'0')} · ${typeLabel(x.type)}</small><b>${escHtml(x.title)}</b></span><em>${x.minutes} ${isEn?'min':'分钟'} ›</em></button>`).join('');
-  box.innerHTML=`<div class="productTodayHead"><div><small>${isEn?'TODAY · PERSONAL PATH':'TODAY · 今日路线'}</small><h3>${isEn?`${profile.dailyMinutes} minutes, keep moving.`:`${profile.dailyMinutes} 分钟，继续往前。`}</h3></div><button class="secondary productSettingsBtn" type="button">${isEn?'Settings':'学习设置'}</button></div><div class="productContext"><span>${isEn?'Track':'路线'} · ${escHtml(Catalog.localize(Catalog.track(profile.activeTrack)?.title,profile.locale))}</span>${pattern?`<span>${isEn?'Pattern':'当前模式'} · ${escHtml(isEn?pattern.en:pattern.zh)}</span>`:''}</div><div class="productTasks">${tasks}</div>`;
+  box.innerHTML=`<div class="productTodayHead"><div><small>${isEn?'TODAY · PERSONAL PATH':'TODAY · 今日路线'}</small><h3>${isEn?`${profile.dailyMinutes} minutes, keep moving.`:`${profile.dailyMinutes} 分钟，继续往前。`}</h3></div><button class="secondary productSettingsBtn" type="button">${isEn?'Settings':'学习设置'}</button></div><div class="productContext"><span>${isEn?'Track':'路线'} · ${escHtml(Catalog.localize(Catalog.track(profile.activeTrack)?.title,profile.locale))}</span>${pattern?`<span>${isEn?'Pattern':'知识点'} · ${escHtml(isEn?pattern.en:pattern.zh)}</span>`:''}</div><div class="productTasks">${tasks}</div>`;
   box.querySelector('.productSettingsBtn')?.addEventListener('click',()=>openOnboarding(false));
   box.querySelectorAll('[data-product-task]').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.productTask);if(Number.isFinite(i)&&typeof openProblem==='function')openProblem(i)}));
   lastTodaySignature=signature;
@@ -59,7 +59,7 @@ function mountSettingsInDrawer(){
 function refreshSettingsInDrawer(){const old=document.querySelector('.productSettingsGroup');if(old)old.remove();mountSettingsInDrawer()}
 function applyProductCopy(){
   const isEn=locale()==='en-US';
-  const problemSub=document.querySelector('#page-problems>.subtitle');if(problemSub)problemSub.textContent=isEn?'Practice by pattern. Switch between Learn, Practice, and Interview anytime.':'按知识模式练习；每道题都可以随时切换学习、刷题和面试模式。';
+  const problemSub=document.querySelector('#page-problems>.subtitle');if(problemSub)problemSub.textContent=isEn?'Browse by Pattern and choose Learn, Practice, or Interview for any problem.':'按知识点组织题目；每道题都可以选择学习、刷题或面试模式。';
   const homeP=document.querySelector('#page-home>.sectionHead p');if(homeP)homeP.textContent=isEn?'Finish the current step and keep moving.':'完成当前步骤后继续。';
 }
 function hookPageEvents(){
