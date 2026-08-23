@@ -56,7 +56,12 @@ html[data-theme="dark"] .productOnboardingScrim{background:rgba(0,0,0,.62)}html[
 document.head.appendChild(style);
 applyProductCopy();renderToday();mountSettingsInDrawer();
 window.addEventListener('hot100toolsready',mountSettingsInDrawer);window.addEventListener('hot100profilechange',()=>{applyProductCopy();renderToday();mountSettingsInDrawer()});
-const observer=new MutationObserver(()=>{if(document.getElementById('page-home'))renderToday();mountSettingsInDrawer()});observer.observe(document.body,{childList:true,subtree:true});
+let refreshQueued=false;
+const observer=new MutationObserver(mutations=>{
+  mountSettingsInDrawer();
+  const outsideProduct=mutations.some(m=>{const el=m.target?.nodeType===1?m.target:m.target?.parentElement;return !el?.closest?.('#productTodayPlan,#productOnboarding,#mobileToolsDrawer')});
+  if(outsideProduct&&!refreshQueued){refreshQueued=true;requestAnimationFrame(()=>{refreshQueued=false;renderToday()})}
+});observer.observe(document.body,{childList:true,subtree:true});
 setTimeout(()=>{if(!Profile.get().onboardingComplete)openOnboarding(true)},350);
 window.HOT100_PRODUCT_SHELL={renderToday,openOnboarding,mountSettingsInDrawer};
 })();
