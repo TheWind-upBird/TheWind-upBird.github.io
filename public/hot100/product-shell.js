@@ -4,7 +4,6 @@ if(!Profile||!Policy||!Catalog)return;
 const escHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let lastTodaySignature='';
 function locale(){return Profile.get().locale||'zh-CN'}
-function stageLabel(stage){const zh={learn:'学会',practice:'迁移',prove:'独立验证'},en={learn:'Learn',practice:'Practice',prove:'Prove'};return locale()==='en-US'?en[stage]||stage:zh[stage]||stage}
 function typeLabel(type){const zh={learn:'新学',practice:'巩固',review:'复习',prove:'独立'},en={learn:'Learn',practice:'Practice',review:'Review',prove:'Prove'};return locale()==='en-US'?en[type]||type:zh[type]||type}
 function currentProblemSafe(){try{return typeof current==='function'?current():(window.HOT100_CURRICULUM||[])[state?.currentProblem||0]}catch(e){return null}}
 function todaySignature(profile,p){
@@ -19,9 +18,9 @@ function renderToday(force=false){
   let box=document.getElementById('productTodayPlan');
   if(!force&&box&&signature===lastTodaySignature)return;
   if(!box){box=document.createElement('section');box.id='productTodayPlan';box.className='productTodayPlan card';const hero=home.querySelector('.hero');hero?.insertAdjacentElement('beforebegin',box)}
-  const plan=Policy.todayPlan(profile.dailyMinutes||20),policy=p?Policy.scaffoldPlan(p):null,pattern=p?Catalog.patternFor(p):null,isEn=profile.locale==='en-US';
+  const plan=Policy.todayPlan(profile.dailyMinutes||20),pattern=p?Catalog.patternFor(p):null,isEn=profile.locale==='en-US';
   const tasks=plan.tasks.map((x,i)=>`<button class="productTask" data-product-task="${x.index}"><span><small>${String(i+1).padStart(2,'0')} · ${typeLabel(x.type)}</small><b>${escHtml(x.title)}</b></span><em>${x.minutes} ${isEn?'min':'分钟'} ›</em></button>`).join('');
-  box.innerHTML=`<div class="productTodayHead"><div><small>${isEn?'TODAY · PERSONAL PATH':'TODAY · 今日路线'}</small><h3>${isEn?`${profile.dailyMinutes} minutes, keep moving.`:`${profile.dailyMinutes} 分钟，继续往前。`}</h3></div><button class="secondary productSettingsBtn" type="button">${isEn?'Settings':'学习设置'}</button></div><div class="productContext"><span>${isEn?'Track':'路线'} · ${escHtml(Catalog.localize(Catalog.track(profile.activeTrack)?.title,profile.locale))}</span>${pattern?`<span>${isEn?'Pattern':'当前模式'} · ${escHtml(isEn?pattern.en:pattern.zh)}</span>`:''}${policy?`<span>${isEn?'Stage':'阶段'} · ${stageLabel(policy.stage)}</span>`:''}</div><div class="productTasks">${tasks}</div>`;
+  box.innerHTML=`<div class="productTodayHead"><div><small>${isEn?'TODAY · PERSONAL PATH':'TODAY · 今日路线'}</small><h3>${isEn?`${profile.dailyMinutes} minutes, keep moving.`:`${profile.dailyMinutes} 分钟，继续往前。`}</h3></div><button class="secondary productSettingsBtn" type="button">${isEn?'Settings':'学习设置'}</button></div><div class="productContext"><span>${isEn?'Track':'路线'} · ${escHtml(Catalog.localize(Catalog.track(profile.activeTrack)?.title,profile.locale))}</span>${pattern?`<span>${isEn?'Pattern':'当前模式'} · ${escHtml(isEn?pattern.en:pattern.zh)}</span>`:''}</div><div class="productTasks">${tasks}</div>`;
   box.querySelector('.productSettingsBtn')?.addEventListener('click',()=>openOnboarding(false));
   box.querySelectorAll('[data-product-task]').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.productTask);if(Number.isFinite(i)&&typeof openProblem==='function')openProblem(i)}));
   lastTodaySignature=signature;
@@ -29,7 +28,7 @@ function renderToday(force=false){
 function option(value,label,current,name,disabled=false){return `<button type="button" class="onboardOption ${current===value?'selected':''}" data-profile-field="${name}" data-profile-value="${value}" ${disabled?'disabled':''}>${escHtml(label)}</button>`}
 function onboardingMarkup(draft,firstRun){
   const isEn=draft.locale==='en-US',t=k=>Profile.t(k,draft.locale);
-  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard" role="dialog" aria-modal="true" aria-label="${escHtml(t('settings'))}"><div class="onboardTop"><div><small>${firstRun?(isEn?'WELCOME':'欢迎'):isEn?'LEARNING PROFILE':'学习档案'}</small><h2>${isEn?'Build a path that fits you.':'先让路线适合你。'}</h2><p>${isEn?'Choose your goal and available time. Support fades as you get stronger.':'选择目标和每天能投入的时间。随着你变熟练，系统会逐渐减少提示。'}</p></div><button class="round onboardClose" type="button" aria-label="Close">×</button></div>
+  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard" role="dialog" aria-modal="true" aria-label="${escHtml(t('settings'))}"><div class="onboardTop"><div><small>${firstRun?(isEn?'WELCOME':'欢迎'):isEn?'LEARNING PROFILE':'学习档案'}</small><h2>${isEn?'Build a path that fits you.':'先让路线适合你。'}</h2><p>${isEn?'Choose your goal and available time. While solving, switch freely between Learn, Practice, and Interview.':'选择目标和每天能投入的时间。做题时可以随时切换学习、刷题和面试模式。'}</p></div><button class="round onboardClose" type="button" aria-label="Close">×</button></div>
   <div class="onboardField"><b>${t('goal')}</b><div class="onboardOptions">${option('internship',t('goalInternship'),draft.goal,'goal')}${option('campus',t('goalCampus'),draft.goal,'goal')}${option('switch',t('goalSwitch'),draft.goal,'goal')}${option('general',t('goalGeneral'),draft.goal,'goal')}</div></div>
   <div class="onboardField"><b>${t('level')}</b><div class="onboardOptions vertical">${option('beginner',t('levelBeginner'),draft.level,'level')}${option('developing',t('levelDeveloping'),draft.level,'level')}${option('interview',t('levelInterview'),draft.level,'level')}</div></div>
   <div class="onboardField"><b>${t('daily')}</b><div class="onboardOptions">${[10,20,30,60].map(x=>option(String(x),t('minute'+x),String(draft.dailyMinutes),'dailyMinutes')).join('')}</div></div>
@@ -60,7 +59,7 @@ function mountSettingsInDrawer(){
 function refreshSettingsInDrawer(){const old=document.querySelector('.productSettingsGroup');if(old)old.remove();mountSettingsInDrawer()}
 function applyProductCopy(){
   const isEn=locale()==='en-US';
-  const problemSub=document.querySelector('#page-problems>.subtitle');if(problemSub)problemSub.textContent=isEn?'Practice by pattern. Guidance fades as you improve.':'按知识模式练习；随着熟练度提高，提示会逐渐减少。';
+  const problemSub=document.querySelector('#page-problems>.subtitle');if(problemSub)problemSub.textContent=isEn?'Practice by pattern. Switch between Learn, Practice, and Interview anytime.':'按知识模式练习；每道题都可以随时切换学习、刷题和面试模式。';
   const homeP=document.querySelector('#page-home>.sectionHead p');if(homeP)homeP.textContent=isEn?'Finish the current step and keep moving.':'完成当前步骤后继续。';
 }
 function hookPageEvents(){
