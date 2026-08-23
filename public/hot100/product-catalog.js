@@ -29,20 +29,6 @@ function patternFor(problem){
   for(const [alias,p] of byAlias.entries())if(topic.includes(alias))return p;
   return {id:'other',zh:topic||'其他',en:problem?.topicEn||'Other',aliases:[]};
 }
-const ROLE_OVERRIDES={
-  'two-sum':'anchor',
-  'group-anagrams':'transfer',
-  'longest-consecutive-sequence':'transfer',
-  'move-zeroes':'anchor',
-  'container-with-most-water':'transfer',
-  '3sum':'transfer',
-  'trapping-rain-water':'interview',
-  'longest-substring-without-repeating-characters':'anchor',
-  'find-all-anagrams-in-a-string':'transfer',
-  'minimum-window-substring':'interview'
-};
-const PILOT_PATTERNS=['hash-map','two-pointers','sliding-window'];
-function roleFor(problem){return ROLE_OVERRIDES[problem.slug]||'anchor'}
 const TRACKS=[{
   id:'hot100-core',
   status:'active',
@@ -57,16 +43,15 @@ function localize(value,locale='zh-CN'){
 }
 for(const p of curriculum){
   const pattern=patternFor(p);
-  p.productMeta={...(p.productMeta||{}),trackId:'hot100-core',patternId:pattern.id,role:roleFor(p),contentVersion:1,pilotScaffold:PILOT_PATTERNS.includes(pattern.id)};
+  p.productMeta={...(p.productMeta||{}),trackId:'hot100-core',patternId:pattern.id,contentVersion:1};
+  delete p.productMeta.role;
+  delete p.productMeta.pilotScaffold;
 }
 window.HOT100_PRODUCT_CATALOG={
-  version:2,
+  version:3,
   patterns:PATTERNS,
-  pilotPatterns:PILOT_PATTERNS,
   tracks:TRACKS,
-  roles:['anchor','transfer','interview'],
   patternFor,
-  roleFor,
   localize,
   track(id='hot100-core'){return TRACKS.find(t=>t.id===id)||TRACKS[0]},
   problemsForTrack(id='hot100-core'){const t=this.track(id);const set=new Set(t?.problemSlugs||[]);return curriculum.filter(p=>set.has(p.slug))},
