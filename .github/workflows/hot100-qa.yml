@@ -29,7 +29,7 @@ jobs:
         run: node scripts/hot100-qa.mjs
       - name: Check adaptive modes and PWA offline package
         run: node scripts/hot100-pwa-qa.mjs
-      - name: Check fading scaffold policy
+      - name: Check eight-card adaptive support policy
         run: node scripts/hot100-scaffold-qa.mjs
       - name: Run Python reference solutions against onsite judges
         run: python scripts/hot100-qa.py
