@@ -14,6 +14,7 @@ const drawer=read('mobile-tools-drawer.js');
 const theme=read('theme-pass.js');
 const wa2=read('wa2-design-pass.js');
 const polish=read('wa2-polish-pass.js');
+const art=read('wa2-art-fix.js');
 const motion=read('wa2-motion-pass.js');
 const ui=read('ui-polish-pass.js');
 const catalog=read('product-catalog.js');
@@ -29,16 +30,17 @@ const manifest=JSON.parse(read('manifest.webmanifest'));
 const icon=read('icon.svg');
 
 for(const [name,src] of [
-  ['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['wa2-motion-pass.js',motion],['ui-polish-pass.js',ui],
+  ['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['wa2-art-fix.js',art],['wa2-motion-pass.js',motion],['ui-polish-pass.js',ui],
   ['product-catalog.js',catalog],['product-profile.js',profile],['learning-policy.js',policy],['product-shell.js',shell],['study-modes.js',modes],['product-library.js',library],['engine-ui.js',engineUi],['sw.js',sw]
 ]){
   try{new vm.Script(src,{filename:name})}catch(err){fail(`${name} syntax error: ${err.message}`)}
 }
 
-for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js','product-catalog.js','product-profile.js','learning-policy.js','product-shell.js','study-modes.js','product-library.js']){
+for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','wa2-art-fix.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js','product-catalog.js','product-profile.js','learning-policy.js','product-shell.js','study-modes.js','product-library.js']){
   if(!index.includes(`src="./${file}"`))fail(`${file} must be loaded statically by index.html`);
 }
 if(index.includes('src="./scaffold-runtime.js"'))fail('card-pruning scaffold runtime must not be loaded');
+if(index.indexOf('src="./wa2-art-fix.js"')<index.indexOf('src="./wa2-polish-pass.js"'))fail('WA2 explicit artwork loader must run after WA2 polish');
 if(index.indexOf('src="./study-modes.js"')<index.indexOf('src="./product-shell.js"'))fail('study-modes.js must load after product-shell.js');
 if(index.indexOf('src="./product-library.js"')<index.indexOf('src="./study-modes.js"'))fail('product-library.js must load after study-modes.js');
 if(!index.includes('id="mobileToolsBtn"'))fail('index.html must contain the permanent hamburger tools button');
@@ -60,6 +62,7 @@ for(const selector of ['html[data-theme="dark"]','html[data-theme="wa2"]'])if(!t
 for(const marker of ['WHITE ALBUM 2','WINTER STUDY EDITION','wa2AlbumArt','wa2TrackRow','wa2KnowledgeCard','wa2SnowField','prefers-reduced-motion'])if(!wa2.includes(marker))fail(`wa2-design-pass.js missing visual marker: ${marker}`);
 if(wa2.includes("#page-home>.title:after{content:'WHITE ALBUM 2 · HOT100'"))fail('obsolete WA2 title pseudo-label must be removed from wa2-design-pass.js at source');
 for(const marker of ['wa2StatusStrip','wa2-winter-scene.svg','WINTER LOG','NOW PLAYING','TRACK LIST','wa2CornerRail','--wa2-serif','wa2FallingSnow','wa2VisibleFall','wa2MoonSweep'])if(!polish.includes(marker))fail(`wa2-polish-pass.js missing polish marker: ${marker}`);
+for(const marker of ['wa2WinterScene','wa2-winter-scene.svg','explicit-image','.wa2AlbumSky:after{display:none!important}'])if(!art.includes(marker))fail(`wa2-art-fix.js missing explicit artwork marker: ${marker}`);
 for(const marker of ['hot100-wa2-motion-v1','白二动态效果','wa2MotionControl','prefers-reduced-motion','wa2MotionLight','hideAllEffects','data-wa2-motion-pref','currentPref'])if(!motion.includes(marker))fail(`wa2-motion-pass.js missing motion marker: ${marker}`);
 for(const marker of ['removeWa2TitleAfterRule','你为什么这么熟练啊','content:none!important'])if(!ui.includes(marker))fail(`ui-polish-pass.js missing UI cleanup marker: ${marker}`);
 if(!motion.includes('.animate(['))fail('wa2-motion-pass.js must use Web Animations API for reliable snowfall');
@@ -91,7 +94,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v23'"))fail('service worker cache version must be v23');
+if(!sw.includes("CACHE='hot100-shell-v24'"))fail('service worker cache version must be v24');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; the library is pattern-first with mode-at-entry, Today mixes review/progress/weakness signals, and all UI layers remain event-driven.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; WA2 uses an explicit winter-scene image, the library is pattern-first with mode-at-entry, Today mixes review/progress/weakness signals, and all product UI layers remain event-driven.`);
