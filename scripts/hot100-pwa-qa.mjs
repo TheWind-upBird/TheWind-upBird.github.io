@@ -63,7 +63,8 @@ if(!scene.includes('<svg')||!scene.includes('viewBox="0 0 900 600"'))fail('WA2 w
 for(const marker of ['hot100-core','patternId','roleFor','anchor','transfer','interview'])if(!catalog.includes(marker))fail(`product-catalog.js missing product-model marker: ${marker}`);
 for(const marker of ['hot100-product-profile-v1','locale','codingLanguage','dailyMinutes','onboardingComplete','zh-CN','en-US'])if(!profile.includes(marker))fail(`product-profile.js missing learner-profile marker: ${marker}`);
 for(const marker of ['scaffoldPlan','masteryEvidence','todayPlan','first-pattern-exposure','fading-scaffold','retain','transfer'])if(!policy.includes(marker))fail(`learning-policy.js missing adaptive-learning marker: ${marker}`);
-for(const marker of ['productTodayPlan','productOnboarding','学习设置','Build a path that fits you','hot100toolsready'])if(!shell.includes(marker))fail(`product-shell.js missing product-shell marker: ${marker}`);
+for(const marker of ['productTodayPlan','productOnboarding','学习设置','Build a path that fits you','hot100toolsready','event-driven'])if(!shell.includes(marker))fail(`product-shell.js missing product-shell marker: ${marker}`);
+if(shell.includes('MutationObserver'))fail('product-shell.js must remain event-driven; global DOM observers caused severe UI lockups');
 
 if(manifest.display!=='standalone')fail('manifest display must be standalone');
 if(!manifest.start_url||!manifest.scope)fail('manifest needs start_url and scope');
@@ -76,7 +77,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v17'"))fail('service worker cache version must be v17');
+if(!sw.includes("CACHE='hot100-shell-v19'"))fail('service worker cache version must be v19');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; product track/profile/scaffolding shell is wired, WA2 cleanup remains enforced, and network-first updates remain enabled.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; product shell is event-driven with no global observer, WA2 cleanup remains enforced, and network-first updates remain enabled.`);
