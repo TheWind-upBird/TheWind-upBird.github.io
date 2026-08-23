@@ -15,7 +15,11 @@ function scaffoldPlan(p){
   const role=p?.productMeta?.role||'anchor';
   const exposure=learnedInPattern(p);
   if(role==='interview')return{stage:'prove',cards:PROVE,exposure,reason:'interview'};
-  if(role==='transfer')return exposure>=2?{stage:'prove',cards:PROVE,exposure,reason:'transfer'}:{stage:'practice',cards:LIGHT,exposure,reason:'transfer'};
+  if(role==='transfer'){
+    if(exposure===0)return{stage:'learn',cards:FULL,exposure,reason:'transfer-without-anchor'};
+    if(exposure===1)return{stage:'practice',cards:LIGHT,exposure,reason:'first-transfer'};
+    return{stage:'prove',cards:PROVE,exposure,reason:'repeated-transfer'};
+  }
   if(exposure===0)return{stage:'learn',cards:FULL,exposure,reason:'first-pattern-exposure'};
   if(exposure===1)return{stage:'practice',cards:GUIDED,exposure,reason:'second-pattern-exposure'};
   if(exposure<=3)return{stage:'practice',cards:LIGHT,exposure,reason:'fading-scaffold'};
