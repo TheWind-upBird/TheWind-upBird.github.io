@@ -1,4 +1,4 @@
-const CACHE='hot100-shell-v16';
+const CACHE='hot100-shell-v17';
 const SHELL=[
   './','./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg','./wa2-winter-scene.svg',
   './curriculum-1.js','./curriculum-2.js','./curriculum-3.js','./curriculum-4.js','./curriculum-5.js','./curriculum-6.js',
@@ -9,7 +9,8 @@ const SHELL=[
   './quality-2-30-pass.js','./engine-state.js','./engine-cards.js','./python-extra.js','./editor-runtime.js',
   './handcrafted-cards.js','./quality-pass.js','./quality-content-pass.js','./two-sum-cards.js','./engine-ui.js',
   './product-pass.js','./utility-pass.js','./practice-snapshot-pass.js','./adaptive-mode-pass.js','./adaptive-compat-pass.js',
-  './mobile-install-fix.js','./theme-pass.js','./wa2-design-pass.js','./wa2-polish-pass.js','./mobile-tools-drawer.js','./wa2-motion-pass.js','./ui-polish-pass.js'
+  './mobile-install-fix.js','./theme-pass.js','./wa2-design-pass.js','./wa2-polish-pass.js','./mobile-tools-drawer.js','./wa2-motion-pass.js','./ui-polish-pass.js',
+  './product-catalog.js','./product-profile.js','./learning-policy.js','./product-shell.js'
 ];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(SHELL.map(url=>cache.add(url)))).then(()=>self.skipWaiting()));
