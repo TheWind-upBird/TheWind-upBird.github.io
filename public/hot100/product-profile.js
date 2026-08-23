@@ -1,5 +1,6 @@
 (()=>{
 const KEY='hot100-product-profile-v1';
+const STATE_SLOT='__productProfile';
 const STRINGS={
   'zh-CN':{
     today:'今天',settings:'学习设置',goal:'目标',daily:'每天投入',level:'当前水平',language:'课程语言',coding:'编程语言',save:'保存设置',later:'稍后再说',start:'开始我的路线',
@@ -16,20 +17,28 @@ const STRINGS={
     zh:'中文',en:'English',python:'Python',cpp:'C++ (coming)',java:'Java (coming)'
   }
 };
-const defaults={
-  version:1,onboardingComplete:false,locale:'zh-CN',codingLanguage:'python',goal:'internship',dailyMinutes:20,level:'beginner',activeTrack:'hot100-core',interviewDate:null,createdAt:null,updatedAt:null
-};
+const defaults={version:1,onboardingComplete:false,locale:'zh-CN',codingLanguage:'python',goal:'internship',dailyMinutes:20,level:'beginner',activeTrack:'hot100-core',interviewDate:null,createdAt:null,updatedAt:null};
 let profile={...defaults};
-try{profile={...defaults,...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){}
+try{
+  const local=JSON.parse(localStorage.getItem(KEY)||'null')||{};
+  const embedded=typeof state!=='undefined'?(state.attempts?.[STATE_SLOT]||{}):{};
+  profile={...defaults,...local,...embedded};
+}catch(e){}
 try{
   const hasExistingProgress=typeof state!=='undefined'&&(Object.keys(state.solved||{}).length>0||Object.keys(state.completedCards||{}).length>0);
-  if(hasExistingProgress&&!localStorage.getItem(KEY))profile={...profile,onboardingComplete:true,createdAt:new Date().toISOString()};
+  if(hasExistingProgress&&!localStorage.getItem(KEY)&&!state.attempts?.[STATE_SLOT])profile={...profile,onboardingComplete:true,createdAt:new Date().toISOString()};
 }catch(e){}
-function persistProfile(){profile.updatedAt=new Date().toISOString();if(!profile.createdAt)profile.createdAt=profile.updatedAt;localStorage.setItem(KEY,JSON.stringify(profile));window.dispatchEvent(new CustomEvent('hot100profilechange',{detail:{profile:{...profile}}}))}
+function persistProfile(){
+  profile.updatedAt=new Date().toISOString();if(!profile.createdAt)profile.createdAt=profile.updatedAt;
+  localStorage.setItem(KEY,JSON.stringify(profile));
+  try{if(typeof state!=='undefined'){state.attempts=state.attempts||{};state.attempts[STATE_SLOT]={...profile};if(typeof persist==='function')persist()}}catch(e){}
+  document.documentElement.lang=profile.locale==='zh-CN'?'zh-CN':'en';
+  window.dispatchEvent(new CustomEvent('hot100profilechange',{detail:{profile:{...profile}}}));
+}
 function update(patch){profile={...profile,...patch};persistProfile();return {...profile}}
 function t(key,locale=profile.locale){return STRINGS[locale]?.[key]??STRINGS['zh-CN'][key]??key}
-function setLocale(locale){if(!STRINGS[locale])return;update({locale});document.documentElement.lang=locale==='zh-CN'?'zh-CN':'en'}
-function reset(){profile={...defaults};localStorage.removeItem(KEY);return {...profile}}
-window.HOT100_PRODUCT_PROFILE={key:KEY,get:()=>({...profile}),update,t,setLocale,reset,strings:STRINGS};
+function setLocale(locale){if(!STRINGS[locale])return;update({locale})}
+function reset(){profile={...defaults};localStorage.removeItem(KEY);try{if(typeof state!=='undefined'&&state.attempts)delete state.attempts[STATE_SLOT]}catch(e){}return {...profile}}
+window.HOT100_PRODUCT_PROFILE={key:KEY,stateSlot:STATE_SLOT,get:()=>({...profile}),update,t,setLocale,reset,strings:STRINGS};
 document.documentElement.lang=profile.locale==='zh-CN'?'zh-CN':'en';
 })();
