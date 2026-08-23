@@ -24,8 +24,8 @@ function evidence(p){
   if(solve){key='已写出';label='已写出';cls='basic'}
   if(hard&&solve){key='需加强';label='需加强';cls='weak'}
   if(retain){key='已掌握';label='已掌握';cls='mastered'}
-  if(due&&!retain){key='待复习';label='待复习';cls='review'}
-  return{started,understand,solve,retain,independentInterview,delayedPass,firstPassAt,key,label,cls,level:key};
+  if(due){key='待复习';label='待复习';cls='review'}
+  return{started,understand,solve,retain,independentInterview,delayedPass,firstPassAt,due,key,label,cls,level:key};
 }
 function stateFor(p){return evidence(p)}
 function masteryCounts(ps){
@@ -81,7 +81,7 @@ const baseKnowledge=typeof renderKnowledge==='function'?renderKnowledge:null;
 if(baseKnowledge){renderKnowledge=function(){baseKnowledge();decorateKnowledge()}}
 function completionCopy(m){
   if(m.key==='已掌握')return['已掌握','你已经隔一段时间再次通过，本题进入已掌握。'];
-  if(m.key==='待复习')return['待复习','这题已经写出来了；下一次复习再次通过后，掌握度会继续升级。'];
+  if(m.key==='待复习')return[m.retain?'已掌握 · 待复习':'待复习',m.retain?'这题已经掌握，但新一轮复习到期了；再独立通过一次即可刷新记忆。':'这题已经写出来了；下一次复习再次通过后，掌握度会继续升级。'];
   if(m.key==='需加强')return['已写出，但还不稳','本次已经通过；系统会更快安排复习。'];
   if(m.solve)return['已写出','先记为“会做”。等下一次间隔复习再次通过后，再升级为“已掌握”。'];
   return['学习中','继续完成本题并通过完整测试。']
