@@ -23,6 +23,7 @@ const policy=read('learning-policy.js');
 const shell=read('product-shell.js');
 const modes=read('study-modes.js');
 const library=read('product-library.js');
+const mastery=read('mastery-pass.js');
 const engineUi=read('engine-ui.js');
 const scene=read('wa2-winter-scene.svg');
 const sw=read('sw.js');
@@ -31,18 +32,19 @@ const icon=read('icon.svg');
 
 for(const [name,src] of [
   ['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['wa2-art-fix.js',art],['wa2-motion-pass.js',motion],['ui-polish-pass.js',ui],
-  ['product-catalog.js',catalog],['product-profile.js',profile],['learning-policy.js',policy],['product-shell.js',shell],['study-modes.js',modes],['product-library.js',library],['engine-ui.js',engineUi],['sw.js',sw]
+  ['product-catalog.js',catalog],['product-profile.js',profile],['learning-policy.js',policy],['product-shell.js',shell],['study-modes.js',modes],['product-library.js',library],['mastery-pass.js',mastery],['engine-ui.js',engineUi],['sw.js',sw]
 ]){
   try{new vm.Script(src,{filename:name})}catch(err){fail(`${name} syntax error: ${err.message}`)}
 }
 
-for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','wa2-art-fix.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js','product-catalog.js','product-profile.js','learning-policy.js','product-shell.js','study-modes.js','product-library.js']){
+for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','wa2-art-fix.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js','product-catalog.js','product-profile.js','learning-policy.js','product-shell.js','study-modes.js','product-library.js','mastery-pass.js']){
   if(!index.includes(`src="./${file}"`))fail(`${file} must be loaded statically by index.html`);
 }
 if(index.includes('src="./scaffold-runtime.js"'))fail('card-pruning scaffold runtime must not be loaded');
 if(index.indexOf('src="./wa2-art-fix.js"')<index.indexOf('src="./wa2-polish-pass.js"'))fail('WA2 explicit artwork loader must run after WA2 polish');
 if(index.indexOf('src="./study-modes.js"')<index.indexOf('src="./product-shell.js"'))fail('study-modes.js must load after product-shell.js');
 if(index.indexOf('src="./product-library.js"')<index.indexOf('src="./study-modes.js"'))fail('product-library.js must load after study-modes.js');
+if(index.indexOf('src="./mastery-pass.js"')<index.indexOf('src="./product-library.js"'))fail('mastery-pass.js must load after product-library.js');
 if(!index.includes('id="mobileToolsBtn"'))fail('index.html must contain the permanent hamburger tools button');
 if(index.includes('id="resumeBtn"'))fail('redundant resume button must not exist in the top bar');
 if(!index.includes('.topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}'))fail('index.html must hide legacy desktop data/reset/install controls before JS runs');
@@ -84,6 +86,8 @@ for(const marker of ["learn:{zh:'学习'","practice:{zh:'刷题'","interview:{zh
 if(modes.includes('MutationObserver'))fail('study-modes.js must remain event-driven');
 for(const marker of ['productLibrarySummary','libraryPatternGroup','libraryPatternChips','libraryModeDock','todayTaskWrap','enhanceToday','pattern-first-mode-at-entry'])if(!library.includes(marker))fail(`product-library.js missing pattern-library marker: ${marker}`);
 if(library.includes('MutationObserver'))fail('product-library.js must remain event-driven');
+for(const marker of ['RETAIN_GAP','已写出','已掌握','delayedPass','masteryReceipt','evidence-not-self-rating'])if(!mastery.includes(marker))fail(`mastery-pass.js missing evidence marker: ${marker}`);
+if(mastery.includes('MutationObserver'))fail('mastery-pass.js must remain event-driven');
 for(const marker of ['cards.length||CARD_COUNT','activeDone','p.slug===\'two-sum\''])if(!engineUi.includes(marker))fail(`engine-ui.js missing card compatibility marker: ${marker}`);
 for(const marker of ['productTodayPlan','productOnboarding','学习设置','Build a path that fits you','hot100toolsready','event-driven'])if(!shell.includes(marker))fail(`product-shell.js missing product-shell marker: ${marker}`);
 if(shell.includes('MutationObserver'))fail('product-shell.js must remain event-driven; global DOM observers caused severe UI lockups');
@@ -100,7 +104,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v25'"))fail('service worker cache version must be v25');
+if(!sw.includes("CACHE='hot100-shell-v26'"))fail('service worker cache version must be v26');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`SolveShift adaptive/PWA QA passed: ${requiredCache.length} assets covered; Hot100 remains a content track, WA2 uses an explicit winter-scene image, the library is pattern-first with mode-at-entry, Today mixes review/progress/weakness signals, and all product UI layers remain event-driven.`);
+console.log(`SolveShift adaptive/PWA QA passed: ${requiredCache.length} assets covered; Hot100 remains a content track, mastery is evidence-based, WA2 uses an explicit winter-scene image, the library is pattern-first with mode-at-entry, and product UI layers remain event-driven.`);
