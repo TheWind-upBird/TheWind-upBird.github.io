@@ -14,7 +14,11 @@ function learnedInPattern(p){const id=patternId(p);return curriculum().filter(x=
 function scaffoldPlan(p){
   const role=p?.productMeta?.role||'anchor';
   const exposure=learnedInPattern(p);
-  if(role==='interview')return{stage:'prove',cards:PROVE,exposure,reason:'interview'};
+  if(role==='interview'){
+    if(exposure===0)return{stage:'learn',cards:FULL,exposure,reason:'interview-without-foundation'};
+    if(exposure===1)return{stage:'practice',cards:LIGHT,exposure,reason:'interview-with-light-support'};
+    return{stage:'prove',cards:PROVE,exposure,reason:'interview-ready'};
+  }
   if(role==='transfer'){
     if(exposure===0)return{stage:'learn',cards:FULL,exposure,reason:'transfer-without-anchor'};
     if(exposure===1)return{stage:'practice',cards:LIGHT,exposure,reason:'first-transfer'};
