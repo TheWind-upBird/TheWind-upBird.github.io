@@ -32,15 +32,15 @@ function mount(){
   menuBtn.setAttribute('aria-label','打开工具菜单');menuBtn.title='工具与设置';
 
   const drawer=document.createElement('div');drawer.id='mobileToolsDrawer';drawer.className='mobileToolsDrawer';
-  drawer.innerHTML=`<div class="mobileToolsScrim" data-tools-close></div><aside class="mobileToolsPanel" aria-label="Hot100 工具与设置">
-    <div class="mobileToolsHead"><div><small>HOT100 LAB</small><h2>工具与设置</h2></div><button class="round" type="button" data-tools-close aria-label="关闭">×</button></div>
+  drawer.innerHTML=`<div class="mobileToolsScrim" data-tools-close></div><aside class="mobileToolsPanel" aria-label="SolveShift 工具与设置">
+    <div class="mobileToolsHead"><div><small>SOLVESHIFT</small><h2>工具与设置</h2></div><button class="round" type="button" data-tools-close aria-label="关闭">×</button></div>
     <div class="mobileToolsStats"><div><small>已完成</small><b id="mobileToolSolved">0 / 100</b></div><div><small>待复习</small><b id="mobileToolDue">0</b></div></div>
     <section class="mobileToolsGroup"><div class="mobileToolsLabel">学习数据</div>
       <button class="mobileToolRow" id="mobileExport" type="button"><span class="toolIcon">⇩</span><span><b>导出学习数据</b><small>备份进度、代码、笔记和复习记录</small></span><em>›</em></button>
       <button class="mobileToolRow" id="mobileImport" type="button"><span class="toolIcon">⇧</span><span><b>导入学习数据</b><small>从 JSON 备份恢复到当前设备</small></span><em>›</em></button>
     </section>
     <section class="mobileToolsGroup"><div class="mobileToolsLabel">进度保护</div><div id="mobileSnapshotSlot"></div></section>
-    <section class="mobileToolsGroup"><div class="mobileToolsLabel">应用</div><button class="mobileToolRow" id="mobileInstall" type="button"><span class="toolIcon">＋</span><span><b>添加到主屏幕</b><small>安装 Hot100 Lab，像 App 一样打开</small></span><em>›</em></button></section>
+    <section class="mobileToolsGroup"><div class="mobileToolsLabel">应用</div><button class="mobileToolRow" id="mobileInstall" type="button"><span class="toolIcon">＋</span><span><b>添加到主屏幕</b><small>安装 SolveShift，像 App 一样打开</small></span><em>›</em></button></section>
     <section class="mobileToolsGroup dangerGroup"><button class="mobileToolRow danger" id="mobileReset" type="button"><span class="toolIcon">↻</span><span><b>重置全部进度</b><small>操作前会自动创建进度快照</small></span><em>›</em></button></section>
   </aside>`;
   document.body.appendChild(drawer);
