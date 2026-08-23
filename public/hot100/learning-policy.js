@@ -9,8 +9,8 @@ function cardsDone(slug){try{return typeof doneCards==='function'?doneCards(slug
 function solvedLevel(slug){try{return state?.solved?.[slug]?.level||null}catch(e){return null}}
 function attemptsFor(slug){try{return state?.attempts?.[slug]?.runs||[]}catch(e){return []}}
 function interviewHistory(slug){try{return (state?.attempts?.__adaptive?.interviews||[]).filter(x=>x.slug===slug)}catch(e){return []}}
-function hasStarted(p){return cardsDone(p.slug).length>0||Boolean(solvedLevel(p.slug))}
-function learnedInPattern(p){const id=patternId(p);return curriculum().filter(x=>x.slug!==p.slug&&patternId(x)===id&&hasStarted(x)).length}
+function hasMeaningfulExposure(p){return Boolean(solvedLevel(p.slug))||cardsDone(p.slug).length>=4}
+function learnedInPattern(p){const id=patternId(p);return curriculum().filter(x=>x.slug!==p.slug&&patternId(x)===id&&hasMeaningfulExposure(x)).length}
 function scaffoldPlan(p){
   const role=p?.productMeta?.role||'anchor';
   const exposure=learnedInPattern(p);
@@ -55,11 +55,14 @@ function todayPlan(minutes=20){
   }catch(e){}
   let currentIndex=0;try{currentIndex=Math.max(0,Math.min(list.length-1,state.currentProblem||0))}catch(e){}
   const current=list[currentIndex];
-  if(current&&!seen.has(current.slug)){const policy=scaffoldPlan(current);tasks.push({type:policy.stage==='prove'?'prove':'learn',slug:current.slug,index:currentIndex,minutes:Math.max(7,minutes-tasks.reduce((s,x)=>s+x.minutes,0)),title:current.title,stage:policy.stage});seen.add(current.slug)}
+  if(current&&!seen.has(current.slug)){
+    const locked=window.HOT100_SCAFFOLD_RUNTIME?.currentPlan?.(current),policy=locked||scaffoldPlan(current);
+    tasks.push({type:policy.stage==='prove'?'prove':policy.stage==='practice'?'practice':'learn',slug:current.slug,index:currentIndex,minutes:Math.max(7,minutes-tasks.reduce((s,x)=>s+x.minutes,0)),title:current.title,stage:policy.stage});seen.add(current.slug)
+  }
   if(!tasks.length&&list[0])tasks.push({type:'learn',slug:list[0].slug,index:0,minutes,title:list[0].title,stage:'learn'});
   let total=tasks.reduce((s,x)=>s+x.minutes,0);
   if(total>minutes&&tasks.length){const scale=minutes/total;tasks.forEach((x,i)=>x.minutes=Math.max(i===tasks.length-1?5:4,Math.round(x.minutes*scale)));total=tasks.reduce((s,x)=>s+x.minutes,0)}
   return{minutes,total,tasks:tasks.slice(0,minutes<=10?1:minutes<=20?2:3)};
 }
-window.HOT100_LEARNING_POLICY={scaffoldPlan,masteryEvidence,todayPlan,patternId,learnedInPattern,cards:{full:FULL,guided:GUIDED,light:LIGHT,prove:PROVE}};
+window.HOT100_LEARNING_POLICY={scaffoldPlan,masteryEvidence,todayPlan,patternId,learnedInPattern,hasMeaningfulExposure,cards:{full:FULL,guided:GUIDED,light:LIGHT,prove:PROVE}};
 })();
