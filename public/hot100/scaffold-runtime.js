@@ -28,6 +28,10 @@ buildCards=function(p){
 };
 function cardsFor(p=current()){try{return buildCards(p)||[]}catch(e){return []}}
 function countFor(p=current()){return Math.max(1,cardsFor(p).length||CARD_COUNT)}
+function storedCountFor(p){
+  const saved=store()[p?.slug];if(saved?.version===VERSION&&Array.isArray(saved.cards)&&saved.cards.length)return saved.cards.length;
+  return CARD_COUNT;
+}
 function touch(p){if(!p)return;state.lastTouched=state.lastTouched||{};state.lastTouched[p.slug]=Date.now()}
 function resumeFor(p){
   const total=countFor(p),n=Number(state.positions?.[p.slug]);
@@ -76,14 +80,16 @@ renderCard=function(){
 };
 const previousRenderProblems=renderProblems;
 renderProblems=function(){
-  previousRenderProblems();
+  previousRenderProblems();const plans=store();
   document.querySelectorAll('[data-problem]').forEach(row=>{
     const i=Number(row.dataset.problem),p=CURRICULUM[i],meta=row.querySelector('.problemMeta');if(!p||!meta)return;
     meta.textContent=meta.textContent.replace(/ · 第 \d+\/8 步/g,'');
-    const total=countFor(p),pos=resumeFor(p);if(pos>0&&pos<total)meta.textContent+=` · 进度 ${Math.round(pos/total*100)}%`;
+    const n=Number(state.positions?.[p.slug]);if(!Number.isFinite(n)||n<=0)return;
+    const total=plans[p.slug]?storedCountFor(p):(hasLegacyProgress(p)?CARD_COUNT:CARD_COUNT),pos=Math.max(0,Math.min(total,n));
+    if(pos>0&&pos<total)meta.textContent+=` · 进度 ${Math.round(pos/total*100)}%`;
   })
 };
 function currentPlan(p=current()){const cards=rawCards(p);return p?resolvePlan(p,cards):null}
-window.HOT100_SCAFFOLD_RUNTIME={version:VERSION,mode:'pilot',pilotPatterns:[...PILOT],cardsFor,countFor,resumeFor,currentPlan,resetPlan(slug){const plans=store();if(slug)delete plans[slug];else state.attempts[SLOT]={};persist()}};
+window.HOT100_SCAFFOLD_RUNTIME={version:VERSION,mode:'pilot',pilotPatterns:[...PILOT],cardsFor,countFor,storedCountFor,resumeFor,currentPlan,resetPlan(slug){const plans=store();if(slug)delete plans[slug];else state.attempts[SLOT]={};persist()}};
 try{renderHome();if(document.getElementById('page-deck')?.classList.contains('active'))renderCard();if(document.getElementById('page-problems')?.classList.contains('active'))renderProblems()}catch(e){console.error('Scaffold runtime refresh failed',e)}
 })();
