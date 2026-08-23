@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hot100 Lab icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="SolveShift icon">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#8a8aff"/>
@@ -7,9 +7,6 @@
   </defs>
   <rect width="512" height="512" rx="112" fill="#11131a"/>
   <rect x="56" y="56" width="400" height="400" rx="102" fill="url(#g)"/>
-  <rect x="146" y="142" width="52" height="190" rx="22" fill="#fff"/>
-  <rect x="314" y="142" width="52" height="190" rx="22" fill="#fff"/>
-  <rect x="180" y="215" width="152" height="48" rx="22" fill="#fff"/>
-  <rect x="165" y="348" width="182" height="62" rx="31" fill="#11131a" opacity=".94"/>
-  <text x="256" y="390" text-anchor="middle" fill="#fff" font-size="40" font-weight="800" font-family="Inter,Segoe UI,Arial,sans-serif" letter-spacing="2">100</text>
+  <path d="M346 165 C316 123 198 125 174 187 C149 252 335 222 339 294 C343 367 196 397 158 337" fill="none" stroke="#fff" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M296 350 H365 M340 325 L365 350 L340 375" fill="none" stroke="#11131a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>
 </svg>
