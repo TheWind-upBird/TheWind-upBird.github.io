@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const root=path.resolve('public/hot100');
 const read=file=>fs.readFileSync(path.join(root,file),'utf8');
-const fail=msg=>{console.error('Hot100 study modes QA failed:',msg);process.exit(1)};
+const fail=msg=>{console.error('SolveShift study modes QA failed:',msg);process.exit(1)};
 const ok=(cond,msg)=>{if(!cond)fail(msg)};
 
 const catalog=read('product-catalog.js');
@@ -13,6 +13,7 @@ const modes=read('study-modes.js');
 const library=read('product-library.js');
 const index=read('index.html');
 const sw=read('sw.js');
+const manifest=JSON.parse(read('manifest.webmanifest'));
 for(const [name,src] of [['product-catalog.js',catalog],['learning-policy.js',policy],['study-modes.js',modes],['product-library.js',library]]){
   try{new vm.Script(src,{filename:name})}catch(err){fail(`${name} syntax error: ${err.message}`)}
 }
@@ -32,7 +33,10 @@ ok(index.includes('src="./wa2-art-fix.js"'),'explicit WA2 winter artwork loader 
 ok(index.indexOf('src="./study-modes.js"')>index.indexOf('src="./product-shell.js"'),'study-modes.js must load after product shell');
 ok(index.indexOf('src="./product-library.js"')>index.indexOf('src="./study-modes.js"'),'product-library.js must load after study modes');
 ok(!index.includes('随着熟练度提高，提示会逐渐减少'),'static UI must not promise automatic prompt fading');
-ok(sw.includes("CACHE='hot100-shell-v24'"),'service worker cache version must be v24');
+ok(index.includes('<title>SolveShift</title>')&&index.includes('<b>SolveShift</b>'),'visible app brand must be SolveShift');
+ok(!index.includes('Hot100 Learning Lab')&&!index.includes('<b>Hot100 Lab</b>'),'legacy Hot100 app branding must not remain in visible shell');
+ok(manifest.name==='SolveShift'&&manifest.short_name==='SolveShift','PWA manifest must use SolveShift brand');
+ok(sw.includes("CACHE='hot100-shell-v25'"),'service worker cache version must be v25');
 ok(sw.includes("'./study-modes.js'")&&sw.includes("'./product-library.js'")&&sw.includes("'./wa2-art-fix.js'"),'service worker must cache study modes, pattern library, and WA2 artwork loader');
 
-console.log('Hot100 study modes QA passed: problems are grouped by Pattern, every entry can choose Learn/Practice/Interview, Today mixes review/progress/weakness, all eight teaching cards remain available, and the WA2 winter artwork loader is cached.');
+console.log('SolveShift study modes QA passed: Hot100 remains a content track, problems are grouped by Pattern, every entry can choose Learn/Practice/Interview, Today mixes review/progress/weakness, all eight teaching cards remain available, and the WA2 winter artwork loader is cached.');
