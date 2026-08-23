@@ -19,7 +19,9 @@ const ui=read('ui-polish-pass.js');
 const catalog=read('product-catalog.js');
 const profile=read('product-profile.js');
 const policy=read('learning-policy.js');
+const scaffold=read('scaffold-runtime.js');
 const shell=read('product-shell.js');
+const engineUi=read('engine-ui.js');
 const scene=read('wa2-winter-scene.svg');
 const sw=read('sw.js');
 const manifest=JSON.parse(read('manifest.webmanifest'));
@@ -27,14 +29,15 @@ const icon=read('icon.svg');
 
 for(const [name,src] of [
   ['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['wa2-motion-pass.js',motion],['ui-polish-pass.js',ui],
-  ['product-catalog.js',catalog],['product-profile.js',profile],['learning-policy.js',policy],['product-shell.js',shell],['sw.js',sw]
+  ['product-catalog.js',catalog],['product-profile.js',profile],['learning-policy.js',policy],['scaffold-runtime.js',scaffold],['product-shell.js',shell],['engine-ui.js',engineUi],['sw.js',sw]
 ]){
   try{new vm.Script(src,{filename:name})}catch(err){fail(`${name} syntax error: ${err.message}`)}
 }
 
-for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js','product-catalog.js','product-profile.js','learning-policy.js','product-shell.js']){
+for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js','product-catalog.js','product-profile.js','learning-policy.js','scaffold-runtime.js','product-shell.js']){
   if(!index.includes(`src="./${file}"`))fail(`${file} must be loaded statically by index.html`);
 }
+if(index.indexOf('src="./scaffold-runtime.js"')>index.indexOf('src="./product-shell.js"'))fail('scaffold-runtime.js must load before product-shell.js');
 if(!index.includes('id="mobileToolsBtn"'))fail('index.html must contain the permanent hamburger tools button');
 if(index.includes('id="resumeBtn"'))fail('redundant resume button must not exist in the top bar');
 if(!index.includes('.topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}'))fail('index.html must hide legacy desktop data/reset/install controls before JS runs');
@@ -60,9 +63,12 @@ if(!motion.includes('#wa2FallingSnow')||!motion.includes('.wa2SnowField')||!moti
 if(!motion.includes("if(v==='off')hideAllEffects()"))fail('WA2 off click must hide effects immediately without storage round-trip');
 if(!scene.includes('<svg')||!scene.includes('viewBox="0 0 900 600"'))fail('WA2 winter scene SVG is invalid');
 
-for(const marker of ['hot100-core','patternId','roleFor','anchor','transfer','interview'])if(!catalog.includes(marker))fail(`product-catalog.js missing product-model marker: ${marker}`);
+for(const marker of ['hot100-core','patternId','roleFor','anchor','transfer','interview','PILOT_PATTERNS','group-anagrams','trapping-rain-water','minimum-window-substring'])if(!catalog.includes(marker))fail(`product-catalog.js missing product-model marker: ${marker}`);
 for(const marker of ['hot100-product-profile-v1','locale','codingLanguage','dailyMinutes','onboardingComplete','zh-CN','en-US'])if(!profile.includes(marker))fail(`product-profile.js missing learner-profile marker: ${marker}`);
-for(const marker of ['scaffoldPlan','masteryEvidence','todayPlan','first-pattern-exposure','fading-scaffold','retain','transfer'])if(!policy.includes(marker))fail(`learning-policy.js missing adaptive-learning marker: ${marker}`);
+for(const marker of ['scaffoldPlan','masteryEvidence','todayPlan','transfer-without-anchor','first-transfer','repeated-transfer','retain','transfer'])if(!policy.includes(marker))fail(`learning-policy.js missing adaptive-learning marker: ${marker}`);
+for(const marker of ['__scaffoldPlans','two-sum-canonical','legacy-progress-preserved','countFor','resumeFor','openHot100Review','pilotPatterns'])if(!scaffold.includes(marker))fail(`scaffold-runtime.js missing runtime marker: ${marker}`);
+if(scaffold.includes('MutationObserver'))fail('scaffold-runtime.js must not use global DOM observers');
+for(const marker of ['cards.length||CARD_COUNT','activeDone','p.slug===\'two-sum\''])if(!engineUi.includes(marker))fail(`engine-ui.js missing variable-card support marker: ${marker}`);
 for(const marker of ['productTodayPlan','productOnboarding','学习设置','Build a path that fits you','hot100toolsready','event-driven'])if(!shell.includes(marker))fail(`product-shell.js missing product-shell marker: ${marker}`);
 if(shell.includes('MutationObserver'))fail('product-shell.js must remain event-driven; global DOM observers caused severe UI lockups');
 
@@ -77,7 +83,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v19'"))fail('service worker cache version must be v19');
+if(!sw.includes("CACHE='hot100-shell-v20'"))fail('service worker cache version must be v20');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; product shell is event-driven with no global observer, WA2 cleanup remains enforced, and network-first updates remain enabled.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; pilot fading scaffolds are wired without DOM observers, product shell stays event-driven, and network-first updates remain enabled.`);
