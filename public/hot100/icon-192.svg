@@ -1,12 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 512 512" role="img" aria-label="Hot100 Lab">
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 512 512" role="img" aria-label="SolveShift">
   <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a8aff"/><stop offset="1" stop-color="#5b5bd6"/></linearGradient></defs>
   <rect width="512" height="512" rx="112" fill="#11131a"/>
   <rect x="56" y="56" width="400" height="400" rx="102" fill="url(#g)"/>
-  <rect x="146" y="132" width="52" height="190" rx="22" fill="#fff"/>
-  <rect x="314" y="132" width="52" height="190" rx="22" fill="#fff"/>
-  <rect x="180" y="205" width="152" height="48" rx="22" fill="#fff"/>
-  <rect x="150" y="350" width="212" height="70" rx="35" fill="#11131a" opacity=".94"/>
-  <rect x="188" y="370" width="13" height="30" rx="6" fill="#fff"/>
-  <circle cx="241" cy="385" r="16" fill="none" stroke="#fff" stroke-width="10"/>
-  <circle cx="306" cy="385" r="16" fill="none" stroke="#fff" stroke-width="10"/>
+  <path d="M346 165 C316 123 198 125 174 187 C149 252 335 222 339 294 C343 367 196 397 158 337" fill="none" stroke="#fff" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M296 350 H365 M340 325 L365 350 L340 375" fill="none" stroke="#11131a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>
 </svg>
