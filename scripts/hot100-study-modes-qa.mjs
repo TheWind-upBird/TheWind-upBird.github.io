@@ -28,10 +28,11 @@ for(const marker of ['productLibrarySummary','libraryPatternGroup','libraryPatte
 ok(!modes.includes('MutationObserver')&&!library.includes('MutationObserver'),'mode and library layers must remain event-driven');
 ok(index.includes('src="./study-modes.js"'),'study-modes.js must load statically');
 ok(index.includes('src="./product-library.js"'),'product-library.js must load statically');
+ok(index.includes('src="./wa2-art-fix.js"'),'explicit WA2 winter artwork loader must load statically');
 ok(index.indexOf('src="./study-modes.js"')>index.indexOf('src="./product-shell.js"'),'study-modes.js must load after product shell');
 ok(index.indexOf('src="./product-library.js"')>index.indexOf('src="./study-modes.js"'),'product-library.js must load after study modes');
 ok(!index.includes('随着熟练度提高，提示会逐渐减少'),'static UI must not promise automatic prompt fading');
-ok(sw.includes("CACHE='hot100-shell-v23'"),'service worker cache version must be v23');
-ok(sw.includes("'./study-modes.js'")&&sw.includes("'./product-library.js'"),'service worker must cache study modes and pattern library');
+ok(sw.includes("CACHE='hot100-shell-v24'"),'service worker cache version must be v24');
+ok(sw.includes("'./study-modes.js'")&&sw.includes("'./product-library.js'")&&sw.includes("'./wa2-art-fix.js'"),'service worker must cache study modes, pattern library, and WA2 artwork loader');
 
-console.log('Hot100 study modes QA passed: problems are grouped by Pattern, every entry can choose Learn/Practice/Interview, Today mixes review/progress/weakness, and all eight teaching cards remain available.');
+console.log('Hot100 study modes QA passed: problems are grouped by Pattern, every entry can choose Learn/Practice/Interview, Today mixes review/progress/weakness, all eight teaching cards remain available, and the WA2 winter artwork loader is cached.');
