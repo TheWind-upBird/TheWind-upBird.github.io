@@ -16,16 +16,23 @@ const wa2=read('wa2-design-pass.js');
 const polish=read('wa2-polish-pass.js');
 const motion=read('wa2-motion-pass.js');
 const ui=read('ui-polish-pass.js');
+const catalog=read('product-catalog.js');
+const profile=read('product-profile.js');
+const policy=read('learning-policy.js');
+const shell=read('product-shell.js');
 const scene=read('wa2-winter-scene.svg');
 const sw=read('sw.js');
 const manifest=JSON.parse(read('manifest.webmanifest'));
 const icon=read('icon.svg');
 
-for(const [name,src] of [['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['wa2-motion-pass.js',motion],['ui-polish-pass.js',ui],['sw.js',sw]]){
+for(const [name,src] of [
+  ['mobile-install-fix.js',install],['mobile-tools-drawer.js',drawer],['theme-pass.js',theme],['wa2-design-pass.js',wa2],['wa2-polish-pass.js',polish],['wa2-motion-pass.js',motion],['ui-polish-pass.js',ui],
+  ['product-catalog.js',catalog],['product-profile.js',profile],['learning-policy.js',policy],['product-shell.js',shell],['sw.js',sw]
+]){
   try{new vm.Script(src,{filename:name})}catch(err){fail(`${name} syntax error: ${err.message}`)}
 }
 
-for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js']){
+for(const file of ['adaptive-mode-pass.js','adaptive-compat-pass.js','practice-snapshot-pass.js','utility-pass.js','mobile-install-fix.js','theme-pass.js','wa2-design-pass.js','wa2-polish-pass.js','mobile-tools-drawer.js','wa2-motion-pass.js','ui-polish-pass.js','product-catalog.js','product-profile.js','learning-policy.js','product-shell.js']){
   if(!index.includes(`src="./${file}"`))fail(`${file} must be loaded statically by index.html`);
 }
 if(!index.includes('id="mobileToolsBtn"'))fail('index.html must contain the permanent hamburger tools button');
@@ -34,6 +41,7 @@ if(!index.includes('.topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstal
 if(!index.includes("localStorage.getItem('hot100-wa2-motion-v1')")||!index.includes('dataset.wa2MotionPref'))fail('index.html must restore WA2 motion preference before first paint');
 if(!index.includes('html[data-theme="wa2"] body{background:linear-gradient'))fail('WA2 first paint must use a snow-free base background');
 if(!index.includes('html[data-theme="wa2"][data-wa2-motion-pref="off"] #wa2FallingSnow'))fail('WA2 off state must be enforced in first-paint CSS');
+if(index.includes('Hot100 100 道题全部使用同一套 8 步学习流程'))fail('internal fixed-step product copy must not be shown to users');
 if(install.includes("s.src='./mobile-tools-drawer.js'")||install.includes("s.src='./theme-pass.js'"))fail('install helper must not dynamically bootstrap the UI stack');
 
 for(const marker of ['独立练习','weaknessScore','10 分钟','20 分钟','serviceWorker.register'])if(!adaptive.includes(marker))fail(`adaptive-mode-pass.js missing marker: ${marker}`);
@@ -52,6 +60,11 @@ if(!motion.includes('#wa2FallingSnow')||!motion.includes('.wa2SnowField')||!moti
 if(!motion.includes("if(v==='off')hideAllEffects()"))fail('WA2 off click must hide effects immediately without storage round-trip');
 if(!scene.includes('<svg')||!scene.includes('viewBox="0 0 900 600"'))fail('WA2 winter scene SVG is invalid');
 
+for(const marker of ['hot100-core','patternId','roleFor','anchor','transfer','interview'])if(!catalog.includes(marker))fail(`product-catalog.js missing product-model marker: ${marker}`);
+for(const marker of ['hot100-product-profile-v1','locale','codingLanguage','dailyMinutes','onboardingComplete','zh-CN','en-US'])if(!profile.includes(marker))fail(`product-profile.js missing learner-profile marker: ${marker}`);
+for(const marker of ['scaffoldPlan','masteryEvidence','todayPlan','first-pattern-exposure','fading-scaffold','retain','transfer'])if(!policy.includes(marker))fail(`learning-policy.js missing adaptive-learning marker: ${marker}`);
+for(const marker of ['productTodayPlan','productOnboarding','学习设置','Build a path that fits you','hot100toolsready'])if(!shell.includes(marker))fail(`product-shell.js missing product-shell marker: ${marker}`);
+
 if(manifest.display!=='standalone')fail('manifest display must be standalone');
 if(!manifest.start_url||!manifest.scope)fail('manifest needs start_url and scope');
 if(!Array.isArray(manifest.icons)||manifest.icons.length<2)fail('manifest needs regular and maskable icons');
@@ -63,7 +76,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v16'"))fail('service worker cache version must be v16');
+if(!sw.includes("CACHE='hot100-shell-v17'"))fail('service worker cache version must be v17');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
-console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; obsolete WA2 title pseudo-label is removed at source, off is enforced before first paint, and network-first updates remain enabled.`);
+console.log(`Adaptive/PWA QA passed: ${requiredCache.length} assets covered; product track/profile/scaffolding shell is wired, WA2 cleanup remains enforced, and network-first updates remain enabled.`);
