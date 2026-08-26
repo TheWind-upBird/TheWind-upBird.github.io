@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://cdn.jsdelivr.net; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="no-referrer" />
   <meta name="theme-color" content="#f6f7fb" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -11,7 +13,7 @@
   <link rel="stylesheet" href="./style.css" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
-  <script>try{const t=localStorage.getItem('hot100-theme-v1');if(['day','dark','wa2'].includes(t))document.documentElement.dataset.theme=t;const m=localStorage.getItem('hot100-wa2-motion-v1');if(['auto','on','off'].includes(m))document.documentElement.dataset.wa2MotionPref=m}catch(e){}</script>
+  <script src="./theme-bootstrap.js"></script>
   <style>
     .stepRow{display:grid;grid-template-columns:38px 1fr auto;gap:13px;align-items:center;padding:15px 17px;box-shadow:none}.stepRow small{display:block;color:var(--muted);font-size:12px}.stepNo{width:33px;height:33px;border-radius:10px;background:#f1f2f6;display:grid;place-items:center;font-size:12px;font-weight:700}.problemRow{padding:15px 16px;box-shadow:none;display:flex;justify-content:space-between;align-items:center;gap:14px}.problemRow small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.status{font-size:12px;white-space:nowrap}.knowledge{padding:18px;box-shadow:none}.knowledge h3{margin:4px 0}.knowledge p{font-size:12px}.knowledge.locked{opacity:.55}.levelList{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.levelList span{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:var(--muted)}.levelList span.done{background:var(--goodbg);border-color:#b8e0ca;color:var(--good)}.reviewRow{padding:15px 16px;display:flex;justify-content:space-between;align-items:center;gap:14px;box-shadow:none}.reviewRow small{display:block;color:var(--muted);font-size:12px}.runner.pass{background:var(--goodbg);border-color:#b8e0ca;color:var(--good)}.runner.fail{background:var(--badbg);border-color:#f1c0bb;color:var(--bad)}.choice.selected,.rate.selected{border-color:#b9b9ff;background:var(--accent2)}
     .topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}.mobileToolsBtn{display:inline-flex!important;width:42px;height:42px;min-width:42px;padding:0;border-radius:12px;align-items:center;justify-content:center;flex-direction:column;gap:4px}.mobileToolsBtn span{display:block;width:17px;height:2px;border-radius:99px;background:currentColor}
@@ -35,18 +37,18 @@
   </aside>
 
   <div class="shell">
-    <header class="topbar"><div><b>SolveShift</b><span class="tag">移动端友好</span></div><div><button class="ghost mobileToolsBtn" id="mobileToolsBtn" type="button" aria-label="打开工具菜单" title="工具与设置"><span></span><span></span><span></span></button><button class="ghost" id="resetBtn">↻</button></div></header>
+    <header class="topbar"><div><b>SolveShift</b><span class="tag">移动端友好</span></div><div><button class="ghost mobileToolsBtn" id="mobileToolsBtn" type="button" aria-label="打开工具菜单" title="工具与设置"><span></span><span></span><span></span></button><button class="ghost" id="resetBtn" aria-label="重置学习进度" title="重置学习进度">↻</button></div></header>
     <main class="content">
       <section class="page active" id="page-home">
-        <div class="eyebrow">第 1 / 100 题 · 哈希表</div>
+        <div class="eyebrow">路线第 1 / 100 题 · LeetCode 1 · 哈希表</div>
         <h1 class="title">两数之和，<br>从理解到写出代码。</h1>
-        <div class="card hero"><div class="heroMain"><span class="tag" style="margin-left:0">当前题 · 1 / 100</span><h2>两数之和 · Two Sum</h2><p class="muted">哈希表 · Easy</p><div class="heroActions"><button class="primary" id="startDeckBtn">开始这道题 →</button><span class="muted" style="font-size:12px">每题完成后可直接进入下一题</span></div></div><div class="deckArt"><div class="mini"></div><div class="mini"></div><div class="mini"><small>Step 1</small><b>两数之和<br>哈希表</b></div></div></div>
+        <div class="card hero"><div class="heroMain"><span class="tag" style="margin-left:0">路线第 1 / 100 题 · LeetCode 1</span><h2>两数之和 · Two Sum</h2><p class="muted">哈希表 · Easy</p><div class="heroActions"><button class="primary" id="startDeckBtn">开始这道题 →</button><span class="muted" style="font-size:12px">每题完成后可直接进入下一题</span></div></div><div class="deckArt"><div class="mini"></div><div class="mini"></div><div class="mini"><small>Step 1</small><b>两数之和<br>哈希表</b></div></div></div>
         <div class="summaryGrid"><div class="card summary"><small>当前题进度</small><strong id="todayDone">0%</strong><small>完成后进入下一步</small></div><div class="card summary"><small>已完成题目</small><strong id="homeSolved">0</strong><small>Hot100 全部题目</small></div><div class="card summary"><small>待复习</small><strong id="homeReview">0</strong><small>根据完成情况安排</small></div></div>
         <div class="sectionHead"><div><h3>这道题的学习顺序</h3><p>完成当前步骤后继续。</p></div></div><div class="todaySteps" id="todaySteps"></div>
       </section>
 
       <section class="page" id="page-deck">
-        <div class="deckHead"><div style="display:flex;align-items:center;gap:10px"><button class="round" data-page="home">←</button><div><div class="eyebrow">第 1 / 100 题 · 哈希表</div><b>两数之和</b></div></div><div class="muted" style="font-size:13px"><span id="cardIndex">1</span> / <span id="cardTotal">8</span></div></div>
+        <div class="deckHead"><div style="display:flex;align-items:center;gap:10px"><button class="round" data-page="home" aria-label="返回今天">←</button><div><div class="eyebrow">路线第 1 / 100 题 · LeetCode 1 · 哈希表</div><b>两数之和</b></div></div><div class="muted" style="font-size:13px"><span id="cardIndex">1</span> / <span id="cardTotal">8</span></div></div>
         <div class="deckTrack"><div id="deckFill"></div></div><article class="card studyCard" id="studyCard"></article>
       </section>
 
@@ -65,8 +67,9 @@
     </main>
   </div>
 </div>
-<nav class="mobileBar"><button class="mobileBtn active" data-page="home">今天</button><button class="mobileBtn" data-page="deck">学习</button><button class="mobileBtn" data-page="problems">题库</button><button class="mobileBtn" data-page="review">复习</button></nav>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<footer class="siteTrustFooter"><span>SolveShift · 朋友内测 Beta</span><nav aria-label="信任与发布"><a href="./privacy.html">隐私说明</a><a href="./terms.html">使用条款</a><a href="./beta-guide.html">测试任务</a><a href="./SolveShift-Beta-Release-Checklist.md">发布标准</a></nav></footer>
+<nav class="mobileBar" aria-label="主要导航"><button class="mobileBtn active" data-page="home">今天</button><button class="mobileBtn" data-page="deck">学习</button><button class="mobileBtn" data-page="problems">题库</button><button class="mobileBtn" data-page="review">复习</button></nav>
+<script src="./release-config.js"></script>
 <script src="./curriculum-1.js"></script>
 <script src="./curriculum-2.js"></script>
 <script src="./curriculum-3.js"></script>
@@ -75,7 +78,6 @@
 <script src="./curriculum-6.js"></script>
 <script src="./handcrafted-patterns.js"></script>
 <script src="./lesson-overrides.js"></script>
-<script src="./beginner-intuition.js"></script>
 <script src="./handcrafted-2-10.js"></script>
 <script src="./handcrafted-11-20.js"></script>
 <script src="./handcrafted-21-30.js"></script>
@@ -90,8 +92,12 @@
 <script src="./hot100-81-90.js"></script>
 <script src="./hot100-91-100.js"></script>
 <script src="./quality-2-30-pass.js"></script>
+<script src="./content-integrity-pass.js"></script>
+<script src="./calendar-utils.js"></script>
 <script src="./engine-state.js"></script>
+<script src="./analytics-pass.js"></script>
 <script src="./engine-cards.js"></script>
+<script src="./beginner-intuition.js"></script>
 <script src="./python-extra.js"></script>
 <script src="./editor-runtime.js"></script>
 <script src="./handcrafted-cards.js"></script>
@@ -119,5 +125,12 @@
 <script src="./study-modes.js"></script>
 <script src="./product-library.js"></script>
 <script src="./mastery-pass.js"></script>
+<script src="./accessibility-pass.js"></script>
+<script src="./retention-pass.js"></script>
+<script src="./feedback-pass.js"></script>
+<script src="./continuity-pass.js"></script>
+<script src="./app-health-pass.js"></script>
+<script src="./data-protection-pass.js"></script>
+<script src="./release-guard-pass.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 (()=>{
 const SNAP_KEY='hot100-lab-snapshots-v1';
-const SNAP_LIMIT=5;
+const SNAP_LIMIT=3;
+const VERSION_LIMIT=5,VERSION_CHAR_BUDGET=250000;
 
 function ensurePracticeState(){
   state.attempts=state.attempts||{};
@@ -25,9 +26,9 @@ function loadSnapshots(){
   try{const x=JSON.parse(localStorage.getItem(SNAP_KEY)||'[]');return Array.isArray(x)?x:[]}catch(e){return[]}
 }
 function writeSnapshots(items){
-  try{localStorage.setItem(SNAP_KEY,JSON.stringify(items.slice(0,SNAP_LIMIT)))}catch(e){
+  try{localStorage.setItem(SNAP_KEY,JSON.stringify(items.slice(0,SNAP_LIMIT)));return true}catch(e){
     // If storage is tight, retain fewer snapshots rather than risking the live learning state.
-    try{localStorage.setItem(SNAP_KEY,JSON.stringify(items.slice(0,2)))}catch(_e){}
+    try{localStorage.setItem(SNAP_KEY,JSON.stringify(items.slice(0,1)));return true}catch(finalError){reportStorageError(finalError);return false}
   }
 }
 function meaningfulProgress(){
@@ -40,7 +41,7 @@ function createSnapshot(reason='手动快照',force=false){
   const snap={id:`${Date.now()}-${Math.random().toString(36).slice(2,7)}`,createdAt:new Date().toISOString(),day:localYmd(),reason,solved,currentProblem:Number(state.currentProblem||0),progress:snapshotProgress()};
   const signature=JSON.stringify([solved,state.currentProblem,state.deckIndex,Object.keys(state.completedCards||{}).length,Object.keys(state.codes||{}).length]);
   if(!force&&items[0]?.signature===signature&&items[0]?.day===snap.day)return items[0];
-  snap.signature=signature;items.unshift(snap);writeSnapshots(items);renderSnapshotList();return snap;
+  snap.signature=signature;items.unshift(snap);if(!writeSnapshots(items))return null;renderSnapshotList();return snap;
 }
 function normalizeSnapshotProgress(p){
   const next={...state,...p};
@@ -86,7 +87,9 @@ function attemptBucket(slug){
 function saveRunVersion(p,code){
   const b=attemptBucket(p.slug),last=b.versions[0];
   if(last?.code===code)return;
-  b.versions.unshift({at:new Date().toISOString(),code});b.versions=b.versions.slice(0,8);persist();
+  b.versions.unshift({at:new Date().toISOString(),code:String(code||'').slice(0,MAX_CODE_CHARS)});b.versions=b.versions.slice(0,VERSION_LIMIT);
+  while(b.versions.length>1&&b.versions.reduce((total,item)=>total+String(item.code||'').length,0)>VERSION_CHAR_BUDGET)b.versions.pop();
+  persist();
 }
 function recordRun(p,passed,duration){
   const b=attemptBucket(p.slug);
@@ -121,6 +124,7 @@ function makeReferenceCode(p){
 }
 function diffLines(a,b){
   const A=a.replace(/\r/g,'').split('\n'),B=b.replace(/\r/g,'').split('\n'),n=A.length,m=B.length;
+  if(n*m>750000)return null;
   const dp=Array.from({length:n+1},()=>new Uint16Array(m+1));
   for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)dp[i][j]=A[i]===B[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
   const out=[];let i=0,j=0;
@@ -131,7 +135,9 @@ function openReferenceDiff(p,ed){
   const dialog=document.getElementById('referenceDiff');if(!dialog)return;
   const ref=makeReferenceCode(p),diff=diffLines(ed.value,ref);
   dialog.querySelector('.diffTitle b').textContent=`${p.title} · 代码对比`;
-  dialog.querySelector('.diffBody').innerHTML=diff.map(([kind,line])=>`<div class="diffLine ${kind}"><span>${kind==='add'?'+':kind==='del'?'−':' '}</span><code>${esc(line)||' '}</code></div>`).join('');
+  const body=dialog.querySelector('.diffBody');
+  if(!diff)body.innerHTML='<div class="callout">代码行数过多，已停止逐行对比以避免页面卡顿。可以先精简代码后再试。</div>';
+  else body.innerHTML=diff.map(([kind,line])=>`<div class="diffLine ${kind}"><span>${kind==='add'?'+':kind==='del'?'−':' '}</span><code>${esc(line)||' '}</code></div>`).join('');
   dialog.classList.add('open');
 }
 function ensureDiffDialog(){
@@ -194,4 +200,5 @@ style.textContent=`
 .diffModal{position:fixed;inset:0;background:rgba(20,24,35,.35);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}.diffModal.open{display:flex}.diffPanel{width:min(860px,96vw);max-height:86vh;background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 24px 80px rgba(20,24,35,.22);padding:16px;display:flex;flex-direction:column}.diffTitle{display:flex;align-items:center;justify-content:space-between;gap:12px}.diffPanel>p{font-size:12px;line-height:1.55;margin:7px 0 10px}.diffBody{overflow:auto;border:1px solid var(--line);border-radius:11px;background:#fafafa;padding:7px 0}.diffLine{display:grid;grid-template-columns:24px 1fr;gap:4px;padding:2px 9px;font-size:12px;line-height:1.55}.diffLine>span{text-align:center;color:var(--muted)}.diffLine code{white-space:pre-wrap;word-break:break-word}.diffLine.add{background:#eef9f2}.diffLine.del{background:#fff1f0}.diffLine.same{opacity:.72}@media(max-width:620px){.practiceActions>.secondary{flex:1 1 auto}.runHistory{width:100%}.runHistory #runHistoryList{position:static;margin-top:4px;box-shadow:none}.diffPanel{padding:12px}.diffLine{font-size:11px}}
 `;
 document.head.appendChild(style);
+if(document.getElementById('editor'))mountPracticeEditor(current());
 })();

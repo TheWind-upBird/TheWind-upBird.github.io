@@ -16,6 +16,7 @@ const wa2=read('wa2-design-pass.js');
 const polish=read('wa2-polish-pass.js');
 const art=read('wa2-art-fix.js');
 const motion=read('wa2-motion-pass.js');
+const themeBootstrap=read('theme-bootstrap.js');
 const ui=read('ui-polish-pass.js');
 const catalog=read('product-catalog.js');
 const profile=read('product-profile.js');
@@ -48,7 +49,7 @@ if(index.indexOf('src="./mastery-pass.js"')<index.indexOf('src="./product-librar
 if(!index.includes('id="mobileToolsBtn"'))fail('index.html must contain the permanent hamburger tools button');
 if(index.includes('id="resumeBtn"'))fail('redundant resume button must not exist in the top bar');
 if(!index.includes('.topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}'))fail('index.html must hide legacy desktop data/reset/install controls before JS runs');
-if(!index.includes("localStorage.getItem('hot100-wa2-motion-v1')")||!index.includes('dataset.wa2MotionPref'))fail('index.html must restore WA2 motion preference before first paint');
+if(!themeBootstrap.includes("localStorage.getItem('hot100-wa2-motion-v1')")||!themeBootstrap.includes('dataset.wa2MotionPref')||!index.includes('src="./theme-bootstrap.js"'))fail('theme bootstrap must restore WA2 motion preference before first paint');
 if(!index.includes('html[data-theme="wa2"] body{background:linear-gradient'))fail('WA2 first paint must use a snow-free base background');
 if(!index.includes('html[data-theme="wa2"][data-wa2-motion-pref="off"] #wa2FallingSnow'))fail('WA2 off state must be enforced in first-paint CSS');
 if(index.includes('Hot100 100 道题全部使用同一套 8 步学习流程'))fail('internal fixed-step product copy must not be shown to users');
@@ -79,10 +80,10 @@ if(!scene.includes('<svg')||!scene.includes('viewBox="0 0 900 600"'))fail('WA2 w
 
 for(const marker of ['hot100-core','patternId','patternFor','problemsForPattern'])if(!catalog.includes(marker))fail(`product-catalog.js missing pattern-based product-model marker: ${marker}`);
 if(catalog.includes('ROLE_OVERRIDES')||catalog.includes("roles:['anchor','transfer','interview']"))fail('catalog must not assign fixed Anchor/Transfer/Interview roles');
-for(const marker of ['hot100-product-profile-v1','locale','codingLanguage','dailyMinutes','onboardingComplete','zh-CN','en-US'])if(!profile.includes(marker))fail(`product-profile.js missing learner-profile marker: ${marker}`);
+for(const marker of ['hot100-product-profile-v1','locale','codingLanguage','dailyMinutes','onboardingComplete','diagnosticBand','diagnosticScore','diagnosticSkipped','zh-CN','en-US'])if(!profile.includes(marker))fail(`product-profile.js missing learner-profile marker: ${marker}`);
 for(const marker of ['scaffoldPlan','masteryEvidence','todayPlan','problemWeakness','weakPatterns','user-controlled-modes'])if(!policy.includes(marker))fail(`learning-policy.js missing recommendation marker: ${marker}`);
 if(!policy.includes("const FULL=['intuition','syntax','translate','meaning','fill','trace','full','recall']"))fail('learning policy must preserve the canonical eight-card sequence');
-for(const marker of ["learn:{zh:'学习'","practice:{zh:'刷题'","interview:{zh:'面试'","bySlug","learnPositions","fullCardIndex","openInMode","activeInterview","user-controlled-per-problem"])if(!modes.includes(marker))fail(`study-modes.js missing marker: ${marker}`);
+for(const marker of ["learn:{zh:'学习'","practice:{zh:'刷题'","interview:{zh:'面试'","bySlug","learnPositions","fullCardIndex","openInMode","openLearnAt","activeInterview","user-controlled-per-problem"])if(!modes.includes(marker))fail(`study-modes.js missing marker: ${marker}`);
 if(modes.includes('MutationObserver'))fail('study-modes.js must remain event-driven');
 for(const marker of ['productLibrarySummary','libraryPatternGroup','libraryPatternChips','libraryModeDock','todayTaskWrap','enhanceToday','pattern-first-mode-at-entry'])if(!library.includes(marker))fail(`product-library.js missing pattern-library marker: ${marker}`);
 if(library.includes('MutationObserver'))fail('product-library.js must remain event-driven');
@@ -104,7 +105,7 @@ const requiredCache=[...new Set([...localScripts,'./wa2-winter-scene.svg'])];
 const missingFromCache=requiredCache.filter(src=>!sw.includes(`'${src}'`)&&!sw.includes(`"${src}"`));
 if(missingFromCache.length)fail(`service worker cache is missing: ${missingFromCache.join(', ')}`);
 for(const core of ['./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'])if(!sw.includes(core))fail(`service worker cache is missing core asset ${core}`);
-if(!sw.includes("CACHE='hot100-shell-v26'"))fail('service worker cache version must be v26');
+if(!sw.includes("CACHE='hot100-shell-v45'"))fail('service worker cache version must be v45');
 if(!sw.includes('if(sameOrigin)')||!sw.includes('fetch(req).then'))fail('same-origin assets must use network-first refresh behavior');
 
 console.log(`SolveShift adaptive/PWA QA passed: ${requiredCache.length} assets covered; Hot100 remains a content track, mastery is evidence-based, WA2 uses an explicit winter-scene image, the library is pattern-first with mode-at-entry, and product UI layers remain event-driven.`);

@@ -8,6 +8,9 @@ on:
       - 'scripts/hot100-qa.py'
       - 'scripts/hot100-pwa-qa.mjs'
       - 'scripts/hot100-study-modes-qa.mjs'
+      - 'scripts/hot100-scaffold-qa.mjs'
+      - 'scripts/python-content-qa.py'
+      - 'package.json'
       - '.github/workflows/hot100-qa.yml'
   workflow_dispatch:
 
@@ -25,11 +28,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Check curriculum structure and teaching content
-        run: node scripts/hot100-qa.mjs
-      - name: Check adaptive modes and PWA offline package
-        run: node scripts/hot100-pwa-qa.mjs
-      - name: Check user-controlled study modes
-        run: node scripts/hot100-study-modes-qa.mjs
-      - name: Run Python reference solutions against onsite judges
-        run: python scripts/hot100-qa.py
+      - name: Run SolveShift release content gates
+        run: npm run qa:hot100

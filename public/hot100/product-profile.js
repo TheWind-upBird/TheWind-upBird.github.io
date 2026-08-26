@@ -17,7 +17,7 @@ const STRINGS={
     zh:'中文',en:'English',python:'Python',cpp:'C++ (coming)',java:'Java (coming)'
   }
 };
-const defaults={version:1,onboardingComplete:false,locale:'zh-CN',codingLanguage:'python',goal:'internship',dailyMinutes:20,level:'beginner',activeTrack:'hot100-core',interviewDate:null,createdAt:null,updatedAt:null};
+const defaults={version:2,onboardingComplete:false,locale:'zh-CN',codingLanguage:'python',goal:'internship',dailyMinutes:20,level:'beginner',activeTrack:'hot100-core',interviewDate:null,diagnosticVersion:null,diagnosticBand:null,diagnosticScore:null,diagnosticSkipped:false,diagnosticCompletedAt:null,createdAt:null,updatedAt:null};
 let profile={...defaults};
 try{
   const local=JSON.parse(localStorage.getItem(KEY)||'null')||{};

@@ -78,7 +78,7 @@ function repaintWeakness(){
 }
 
 function quickStartFor(p){
-  const level=state.solved?.[p.slug]?.level,pos=Math.max(0,Math.min(7,Number(state.positions?.[p.slug]||0));
+  const level=state.solved?.[p.slug]?.level,pos=Math.max(0,Math.min(7,Number(state.positions?.[p.slug]||0)));
   if(level==='hard')return 0;if(level==='hint')return 4;if(level==='solo')return 6;return pos;
 }
 function makeQuickTask(p,type,minutes){

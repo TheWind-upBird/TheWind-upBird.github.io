@@ -1,15 +1,17 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 
 const root = path.resolve('public/hot100');
+const indexSource = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const dataFiles = [
   'curriculum-1.js','curriculum-2.js','curriculum-3.js','curriculum-4.js','curriculum-5.js','curriculum-6.js',
   'handcrafted-patterns.js','lesson-overrides.js','beginner-intuition.js',
   'handcrafted-2-10.js','handcrafted-11-20.js','handcrafted-21-30.js',
   'hot100-31-32.js','hot100-33-34.js','hot100-35-40.js','hot100-41-45.js','hot100-46-50.js',
   'hot100-51-60.js','hot100-61-70.js','hot100-71-80.js','hot100-81-90.js','hot100-91-100.js',
-  'quality-2-30-pass.js','python-extra.js'
+  'quality-2-30-pass.js','content-integrity-pass.js','python-extra.js'
 ];
 const runtimeFiles = [
   'engine-state.js','engine-cards.js','editor-runtime.js','handcrafted-cards.js',
@@ -35,7 +37,15 @@ if (!fs.existsSync(path.join(root, 'icon.svg'))) {
   process.exit(1);
 }
 
-const sandbox = { window: {}, console };
+const sandbox = {
+  window: {},
+  console,
+  buildCards: () => [],
+  header: () => '',
+  esc: value => String(value ?? ''),
+  footer: () => '',
+  bindFooter: () => {},
+};
 vm.createContext(sandbox);
 for (const file of dataFiles) {
   const src = fs.readFileSync(path.join(root, file), 'utf8');
@@ -118,8 +128,13 @@ ps.forEach((p, idx) => {
 const tested = ps.slice(1);
 if (tested.length !== 99) fail(`judge-tested curriculum count = ${tested.length}, expected 99`);
 for (const p of tested) {
-  if (!/^(def |class |from |import )/m.test(p.pattern)) fail(`${p.slug} pattern does not look executable`);
+  if (!/^(def |class |from |import )/m.test(p.starter)) fail(`${p.slug} starter does not look executable`);
   if (!String(p.judge).includes('check(')) fail(`${p.slug} judge has no check()`);
+}
+
+if (indexSource.indexOf('src="./beginner-intuition.js"') < indexSource.indexOf('src="./engine-cards.js"')) {
+  console.error('beginner-intuition.js must load after engine-cards.js so its buildCards enhancement is active.');
+  process.exit(1);
 }
 
 const earlyHard = [
@@ -139,9 +154,9 @@ for (const marker of ['独立练习','weaknessScore','10 分钟','manifest.webma
 
 const exportData = {
   pythonExtra: w.HOT100_PY_EXTRA || '',
-  problems: tested.map(p => ({slug:p.slug,title:p.title,pattern:p.pattern,judge:p.judge}))
+  problems: tested.map(p => ({slug:p.slug,title:p.title,pattern:p.pattern,starter:p.starter,judge:p.judge}))
 };
-fs.writeFileSync('/tmp/hot100-qa.json', JSON.stringify(exportData));
+fs.writeFileSync(path.join(os.tmpdir(),'hot100-qa.json'), JSON.stringify(exportData));
 
 console.log(`Hot100 structural QA: ${ps.length} problems; Python judge set: ${tested.length} problems (2-100).`);
 console.log('PWA/adaptive QA: manifest, icon, service worker and adaptive layer present.');

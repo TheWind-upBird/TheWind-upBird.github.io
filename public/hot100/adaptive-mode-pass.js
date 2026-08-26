@@ -74,6 +74,7 @@ function chooseInterview(mode='random'){
 function startInterview(mode='random'){
   const chosen=chooseInterview(mode);if(!chosen)return;
   const m=adaptiveMeta();m.activeInterview={slug:chosen.p.slug,index:chosen.i,mode,startedAt:Date.now(),hintsUsed:0,runs:0,passed:false,recorded:false,code:''};persist();showPage('interview');renderInterviewPage();
+  window.HOT100_ANALYTICS?.track('interview_start',{slug:chosen.p.slug,mode});
 }
 function finishInterview(abandoned=false){
   const m=adaptiveMeta(),s=m.activeInterview;if(!s)return;
@@ -97,15 +98,16 @@ function revealInterviewHint(s,p){
 }
 async function runInterview(s,p){
   const ed=document.getElementById('interviewEditor'),out=document.getElementById('interviewOutput');if(!ed||!out)return;
+  const runButton=document.getElementById('runInterview');if(runButton?.disabled)return;if(runButton)runButton.disabled=true;
   s.code=ed.value;s.runs=(s.runs||0)+1;persist();out.className='runner';out.textContent='正在运行测试...';
   const startedAt=performance.now();
   try{
     const py=await getPy(),extra=window.HOT100_PY_EXTRA||'',code=PY_PRELUDE+'\n'+extra+'\n'+ed.value+'\n'+p.judge+'\njson.dumps(_results, ensure_ascii=False)';
-    const raw=await py.runPythonAsync(code),results=JSON.parse(raw),count=results.filter(r=>r.ok).length,passed=count===results.length;
+    const raw=await py.runPythonAsync(code),results=JSON.parse(raw),count=results.filter(r=>r.ok).length,passed=results.length>0&&count===results.length;
     s.passed=passed;persist();out.className=`runner ${passed?'pass':'fail'}`;
     out.innerHTML=`<b>${count} / ${results.length} 组测试通过 · ${((performance.now()-startedAt)/1000).toFixed(2)}s</b><br>${results.map((r,i)=>`测试 ${i+1}：${r.ok?'通过':`未通过 · ${esc(r.case)} · 得到 ${esc(r.got)}`}`).join('<br>')}`;
-    if(passed){const done=document.getElementById('interviewDone');if(done)done.style.display='inline-flex';const h=document.getElementById('interviewHintBtn');if(h)h.style.display='none';}
-  }catch(err){s.passed=false;persist();out.className='runner fail';out.textContent='运行失败：'+(err?.message||err)}
+    if(passed){window.HOT100_ANALYTICS?.track('interview_pass',{slug:p.slug,mode:s.mode||'random',passed:true});const done=document.getElementById('interviewDone');if(done)done.style.display='inline-flex';const h=document.getElementById('interviewHintBtn');if(h)h.style.display='none';}
+  }catch(err){s.passed=false;persist();out.className='runner fail';const timeout=isPythonTimeout(err),infrastructure=timeout?'':pythonFailureCopy(err);out.textContent=timeout?'运行超时，已自动停止。请检查循环结束条件或递归边界；代码仍然保留。':infrastructure||('运行失败：'+(err?.message||err))}finally{if(runButton)runButton.disabled=false}
 }
 function renderInterviewPage(){
   const area=document.getElementById('interviewArea');if(!area)return;const m=adaptiveMeta(),s=m.activeInterview;
@@ -117,7 +119,7 @@ function renderInterviewPage(){
   const p=CURRICULUM[s.index]||CURRICULUM.find(x=>x.slug===s.slug);if(!p){m.activeInterview=null;persist();renderInterviewPage();return}
   const intro=window.HOT100_BEGINNER_INTUITION?.[p.slug]||{};
   area.innerHTML=`<div class="card interviewSession"><div class="interviewSessionHead"><span><small>题目 ${p.number} · ${p.difficulty}</small><h2>${esc(p.title)} <em>${esc(p.titleEn)}</em></h2></span><button class="secondary" id="quitInterview">结束本次</button></div><div class="interviewPrompt"><b>样例 / 题意线索</b><p>${esc(intro.example||p.title)}</p><small>算法分类已隐藏。先回忆题意和解法，卡住再逐级解锁提示。</small></div><div id="interviewHints" class="interviewHints"></div><div class="editorToolbar"><b>Python</b><small>独立模式 · Ctrl/⌘ + Enter 运行</small></div><textarea class="editor" id="interviewEditor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off">${esc(s.code||'')}</textarea><div class="interviewActions"><button class="primary" id="runInterview">▶ 运行测试</button><button class="secondary" id="interviewHintBtn">${s.hintsUsed>=3?'回到课程':'给一点提示'}</button><button class="secondary" id="interviewDone" style="display:${s.passed?'inline-flex':'none'}">完成并返回</button></div><div class="runner" id="interviewOutput">不看教学卡，先自己写。</div><div class="interviewMeta">已用提示 ${s.hintsUsed||0} / 4 · 已运行 ${s.runs||0} 次</div></div>`;
-  const ed=document.getElementById('interviewEditor');enablePythonIndent(ed);ed.addEventListener('input',()=>{s.code=ed.value;persist()});ed.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();document.getElementById('runInterview')?.click()}});
+  const ed=document.getElementById('interviewEditor');ed.maxLength=MAX_CODE_CHARS;enablePythonIndent(ed);ed.addEventListener('input',()=>{s.code=ed.value;persistSoon()});ed.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();document.getElementById('runInterview')?.click()}});
   document.getElementById('runInterview')?.addEventListener('click',()=>runInterview(s,p));document.getElementById('interviewHintBtn')?.addEventListener('click',()=>revealInterviewHint(s,p));document.getElementById('interviewDone')?.addEventListener('click',()=>finishInterview(false));document.getElementById('quitInterview')?.addEventListener('click',()=>{if(confirm('结束这次独立练习？本次会记为未完成。'))finishInterview(true)});
 }
 

@@ -12,7 +12,12 @@ const context={window:{},state,console,Date,Math,JSON,Set,Map};
 context.doneCards=slug=>state.completedCards[slug]||[];
 vm.createContext(context);
 
-for(const file of ['curriculum-1.js','curriculum-2.js','curriculum-3.js','curriculum-4.js','curriculum-5.js','curriculum-6.js']){
+const curriculumFiles=[
+  'curriculum-1.js','curriculum-2.js','curriculum-3.js','curriculum-4.js','curriculum-5.js','curriculum-6.js',
+  'hot100-31-32.js','hot100-33-34.js','hot100-35-40.js','hot100-41-45.js','hot100-46-50.js',
+  'hot100-51-60.js','hot100-61-70.js','hot100-71-80.js','hot100-81-90.js','hot100-91-100.js'
+];
+for(const file of curriculumFiles){
   vm.runInContext(read(file),context,{filename:file});
 }
 vm.runInContext(read('product-catalog.js'),context,{filename:'product-catalog.js'});
@@ -27,47 +32,27 @@ const expose=slug=>{state.completedCards[slug]=['intuition','syntax','translate'
 const assertEight=(plan,label)=>ok(plan.cards.length===8&&plan.cards.join(',')==='intuition,syntax,translate,meaning,fill,trace,full,recall',`${label} must keep all eight cards`);
 
 ok(list.length===100,`expected 100 curriculum problems, got ${list.length}`);
-ok(catalog.roleFor(problem('two-sum'))==='anchor','two-sum must remain the hash-map anchor');
-ok(catalog.roleFor(problem('group-anagrams'))==='transfer','group-anagrams must remain a transfer problem');
-ok(catalog.roleFor(problem('trapping-rain-water'))==='interview','trapping-rain-water must remain an interview problem');
-ok(catalog.roleFor(problem('minimum-window-substring'))==='interview','minimum-window-substring must remain an interview problem');
+ok(catalog.version>=3,'catalog must use the role-free product model');
+ok(typeof catalog.patternFor==='function','catalog must expose Pattern classification');
+ok(catalog.track('hot100-core')?.problemSlugs?.length===100,'Hot100 track must contain 100 problems');
+for(const p of list){
+  ok(!p.productMeta?.role,`${p.slug} must not have a fixed role`);
+  ok(p.productMeta?.trackId==='hot100-core',`${p.slug} must belong to the Hot100 track`);
+  ok(Boolean(p.productMeta?.patternId),`${p.slug} must have a Pattern classification`);
+}
 
-reset();
-let plan=policy.scaffoldPlan(problem('two-sum'));
-assertEight(plan,'Two Sum');
-ok(plan.stage==='learn'&&plan.support==='full','Two Sum should start with full support');
+for(const slug of ['two-sum','group-anagrams','trapping-rain-water','minimum-window-substring']){
+  reset();
+  let plan=policy.scaffoldPlan(problem(slug));
+  assertEight(plan,`${slug} fresh`);
+  ok(plan.stage==='learn'&&plan.support==='full',`${slug} must keep complete Learn support`);
 
-reset();
-plan=policy.scaffoldPlan(problem('group-anagrams'));
-assertEight(plan,'Transfer without foundation');
-ok(plan.stage==='learn'&&plan.support==='full','Transfer without foundation should keep full support');
-expose('two-sum');
-plan=policy.scaffoldPlan(problem('group-anagrams'));
-assertEight(plan,'First transfer');
-ok(plan.stage==='practice'&&plan.support==='guided','First transfer should change support, not remove cards');
-expose('group-anagrams');
-plan=policy.scaffoldPlan(problem('longest-consecutive-sequence'));
-assertEight(plan,'Repeated transfer');
-ok(plan.stage==='practice'&&plan.support==='light','Repeated transfer should use lighter support while keeping all cards');
+  expose(slug);
+  state.solved[slug]={level:'solo'};
+  plan=policy.scaffoldPlan(problem(slug));
+  assertEight(plan,`${slug} experienced`);
+  ok(plan.stage==='learn'&&plan.support==='full',`${slug} must not auto-reduce Learn support`);
+}
 
-reset();
-plan=policy.scaffoldPlan(problem('minimum-window-substring'));
-assertEight(plan,'Direct-entry interview');
-ok(plan.stage==='learn'&&plan.support==='full','Direct-entry interview should fall back to full support');
-expose('longest-substring-without-repeating-characters');
-plan=policy.scaffoldPlan(problem('minimum-window-substring'));
-assertEight(plan,'Interview with one exposure');
-ok(plan.stage==='practice'&&plan.support==='guided','Interview with one exposure should keep guided support');
-expose('find-all-anagrams-in-a-string');
-plan=policy.scaffoldPlan(problem('minimum-window-substring'));
-assertEight(plan,'Interview-ready');
-ok(plan.stage==='prove'&&plan.support==='challenge','Interview-ready should become challenge-first without deleting cards');
-
-reset();
-state.completedCards['two-sum']=['intuition'];
-plan=policy.scaffoldPlan(problem('group-anagrams'));
-assertEight(plan,'Shallow click');
-ok(plan.stage==='learn'&&plan.support==='full','One clicked card must not count as meaningful pattern exposure');
-
-ok(policy.principle==='keep-all-eight-cards','policy must explicitly preserve all eight cards');
-console.log('Hot100 scaffold QA passed: every stage keeps all eight cards; only support level changes from full → guided → light/challenge.');
+ok(policy.principle==='user-controlled-modes','policy must explicitly use user-controlled modes');
+console.log('SolveShift learning-policy QA passed: all 100 problems are role-free, Pattern-classified, and retain all eight Learn cards regardless of experience.');

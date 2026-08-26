@@ -1,0 +1,1 @@
+(()=>{try{const t=localStorage.getItem('hot100-theme-v1');if(['day','dark','wa2'].includes(t))document.documentElement.dataset.theme=t;const m=localStorage.getItem('hot100-wa2-motion-v1');if(['auto','on','off'].includes(m))document.documentElement.dataset.wa2MotionPref=m}catch(e){}})();
