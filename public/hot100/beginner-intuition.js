@@ -1,4 +1,4 @@
-window.HOT100_BEGINNER_INTUITION={
+window.HOT100_BEGINNER_INTUITION=Object.assign(window.HOT100_BEGINNER_INTUITION||{}, {
 "group-anagrams":{title:"先别管“异位词”，先看这几个单词",example:'["eat", "tea", "tan", "ate"]',observe:'eat、tea、ate 虽然字母顺序不同，但它们都只用了 a、e、t 各一次，所以应该放到同一组。tan 用的是 a、n、t，应该去另一组。',question:'电脑怎样快速判断两个字符串“用了完全相同的字母和次数”？',answer:'一个很直观的办法是把字母排好序：eat → aet，tea → aet，ate → aet。排序结果相同，就放进同一组。后面代码里的 key，就是这个“分组标记”。'},
 "longest-consecutive-sequence":{title:"先找一段连续的数字",example:'[100, 4, 200, 1, 3, 2]',observe:'把顺序暂时忽略，你能看到 1、2、3、4 连在一起，所以答案至少是 4。100 和 200 都只能单独成段。',question:'如果数组很乱，怎么快速知道 x+1、x+2……还在不在数组里？',answer:'先把所有数字放进 set，查询某个数字存不存在会很快。并且只有“前一个数不存在”的数字才从它开始往右数，例如 1 前面没有 0，所以从 1 开始数 1→2→3→4。'},
 "move-zeroes":{title:"先手动把 0 挪到后面",example:'[0, 1, 0, 3, 12]  →  [1, 3, 12, 0, 0]',observe:'我们真正想保留的是非零数字 1、3、12 的原顺序，只把它们依次往前放。',question:'扫描数组时，怎么知道下一个非零数字应该放到哪里？',answer:'用 slow 记住“下一个非零数应该放的位置”，再让另一个指针 fast 从左往右扫描。看到非零数，就把它放到 slow 位置，然后 slow 往右一步。'},
@@ -28,9 +28,4 @@ window.HOT100_BEGINNER_INTUITION={
 "add-two-numbers":{title:"先按小学竖式加法来想",example:'342 + 465 = 807；链表用 2→4→3 和 5→6→4 表示',observe:'链表把个位放在最前面，所以可以直接从头开始逐位相加：2+5=7，4+6=10 要写 0 并向下一位进 1。',question:'每一位除了两个数字，还要额外记住什么？',answer:'记住 carry，也就是进位。每轮算 total = x + y + carry，当前位是 total % 10，新进位是 total // 10。'},
 "remove-nth-node-from-end-of-list":{title:"先把“倒数第 n 个”变成两个指针之间的距离",example:'1→2→3→4→5，删除倒数第 2 个，也就是 4',observe:'如果 fast 比 slow 永远领先 2 个节点，那么 fast 快到尾部时，slow 就自然落在目标附近。',question:'为了真正删除目标节点，slow 最好停在哪里？',answer:'停在目标节点的前一个节点，这样可以直接执行 slow.next = slow.next.next。再加一个 dummy，就连删除头节点也能统一处理。'},
 "swap-nodes-in-pairs":{title:"先只交换第一对节点",example:'1→2→3→4 变成 2→1→4→3',observe:'第一对原来是 prev→1→2→3，交换后应该变成 prev→2→1→3。关键只是重新连接几根 next 指针。',question:'交换完 1 和 2 后，下一轮应该从哪个节点继续？',answer:'交换后 1 成为这一对的尾巴，所以把 prev 移到 1，下一轮再处理它后面的 3、4。dummy 可以让第一对交换也和后面完全一样。'}
-};
-(function(){
-  const base=buildCards;
-  function beginnerCard(p,data){return {id:'intuition',step:'建立直觉',render(){return `${header('learn','知识','建立直觉')}<div class="cardBody"><h2>${esc(data.title)}</h2><div class="bigPrompt">${esc(data.example)}</div><div class="callout"><b>先看发生了什么</b><br><span class="muted">${esc(data.observe)}</span></div><p><b>我们真正要解决的问题：</b>${esc(data.question)}</p><div class="callout"><b>从这里再引出方法</b><br><span class="muted">${esc(data.answer)}</span></div></div>${footer()}`},bind(){bindFooter()}}}
-  buildCards=function(p){const cards=base(p);const data=window.HOT100_BEGINNER_INTUITION[p.slug];if(data&&p.slug!=='two-sum')cards[0]=beginnerCard(p,data);return cards;};
-})();
+});

@@ -7,7 +7,15 @@ function progressSummary(){
   const due=(state.reviewQueue||[]).filter(r=>r.due<=today).length;
   return {solved,due};
 }
-function closeDrawer(){document.getElementById('mobileToolsDrawer')?.classList.remove('open');document.body.classList.remove('toolsOpen')}
+let previousFocus=null;
+function closeDrawer(restoreFocus=true){
+  const drawer=document.getElementById('mobileToolsDrawer'),menuBtn=document.getElementById('mobileToolsBtn');
+  if(!drawer)return;
+  const wasOpen=drawer.classList.contains('open');
+  drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');drawer.setAttribute('inert','');
+  menuBtn?.setAttribute('aria-expanded','false');document.body.classList.remove('toolsOpen');
+  if(wasOpen&&restoreFocus)requestAnimationFrame(()=>previousFocus?.focus?.());
+}
 function openDrawer(){
   const drawer=document.getElementById('mobileToolsDrawer');if(!drawer)return;
   const s=progressSummary();
@@ -15,7 +23,9 @@ function openDrawer(){
   if(solved)solved.textContent=`${s.solved} / ${CURRICULUM.length}`;
   if(due)due.textContent=String(s.due);
   const appGroup=document.getElementById('mobileInstall')?.closest('.mobileToolsGroup');if(appGroup)appGroup.hidden=isStandalone();
-  drawer.classList.add('open');document.body.classList.add('toolsOpen');
+  previousFocus=document.activeElement;drawer.removeAttribute('inert');drawer.setAttribute('aria-hidden','false');
+  drawer.classList.add('open');document.getElementById('mobileToolsBtn')?.setAttribute('aria-expanded','true');document.body.classList.add('toolsOpen');
+  requestAnimationFrame(()=>drawer.querySelector('button[data-tools-close]')?.focus());
 }
 function moveSnapshotSection(){
   const slot=document.getElementById('mobileSnapshotSlot'),section=document.getElementById('snapshotSection');
@@ -29,11 +39,11 @@ function mount(){
     menuBtn=document.createElement('button');menuBtn.id='mobileToolsBtn';menuBtn.className='ghost mobileToolsBtn';menuBtn.type='button';
     menuBtn.innerHTML='<span></span><span></span><span></span>';actions.appendChild(menuBtn);
   }
-  menuBtn.setAttribute('aria-label','打开工具菜单');menuBtn.title='工具与设置';
+  menuBtn.setAttribute('aria-label','打开工具菜单');menuBtn.setAttribute('aria-controls','mobileToolsDrawer');menuBtn.setAttribute('aria-expanded','false');menuBtn.title='工具与设置';
 
-  const drawer=document.createElement('div');drawer.id='mobileToolsDrawer';drawer.className='mobileToolsDrawer';
-  drawer.innerHTML=`<div class="mobileToolsScrim" data-tools-close></div><aside class="mobileToolsPanel" aria-label="SolveShift 工具与设置">
-    <div class="mobileToolsHead"><div><small>SOLVESHIFT</small><h2>工具与设置</h2></div><button class="round" type="button" data-tools-close aria-label="关闭">×</button></div>
+  const drawer=document.createElement('div');drawer.id='mobileToolsDrawer';drawer.className='mobileToolsDrawer';drawer.setAttribute('aria-hidden','true');drawer.setAttribute('inert','');
+  drawer.innerHTML=`<div class="mobileToolsScrim" data-tools-close></div><aside class="mobileToolsPanel" role="dialog" aria-modal="true" aria-labelledby="mobileToolsTitle" tabindex="-1">
+    <div class="mobileToolsHead"><div><small>SOLVESHIFT</small><h2 id="mobileToolsTitle">工具与设置</h2></div><button class="round" type="button" data-tools-close aria-label="关闭">×</button></div>
     <div class="mobileToolsStats"><div><small>已完成</small><b id="mobileToolSolved">0 / 100</b></div><div><small>待复习</small><b id="mobileToolDue">0</b></div></div>
     <section class="mobileToolsGroup"><div class="mobileToolsLabel">学习数据</div>
       <button class="mobileToolRow" id="mobileExport" type="button"><span class="toolIcon">⇩</span><span><b>导出学习数据</b><small>备份进度、代码、笔记和复习记录</small></span><em>›</em></button>
@@ -46,12 +56,21 @@ function mount(){
   document.body.appendChild(drawer);
 
   if(!menuBtn.dataset.toolsBound){menuBtn.dataset.toolsBound='1';menuBtn.addEventListener('click',()=>{moveSnapshotSection();openDrawer()})}
-  drawer.querySelectorAll('[data-tools-close]').forEach(x=>x.addEventListener('click',closeDrawer));
-  document.getElementById('mobileExport')?.addEventListener('click',()=>{closeDrawer();trigger('exportProgress')});
-  document.getElementById('mobileImport')?.addEventListener('click',()=>{closeDrawer();trigger('importProgress')});
-  document.getElementById('mobileInstall')?.addEventListener('click',()=>{closeDrawer();if(window.HOT100_INSTALL?.open)window.HOT100_INSTALL.open();else trigger('mobileInstallBtn')});
-  document.getElementById('mobileReset')?.addEventListener('click',()=>{closeDrawer();trigger('resetBtn')});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+  drawer.querySelectorAll('[data-tools-close]').forEach(x=>x.addEventListener('click',()=>closeDrawer()));
+  document.getElementById('mobileExport')?.addEventListener('click',()=>{closeDrawer(false);trigger('exportProgress')});
+  document.getElementById('mobileImport')?.addEventListener('click',()=>{closeDrawer(false);trigger('importProgress')});
+  document.getElementById('mobileInstall')?.addEventListener('click',()=>{closeDrawer(false);if(window.HOT100_INSTALL?.open)window.HOT100_INSTALL.open();else trigger('mobileInstallBtn')});
+  document.getElementById('mobileReset')?.addEventListener('click',()=>{closeDrawer(false);trigger('resetBtn')});
+  document.addEventListener('keydown',e=>{
+    if(!drawer.classList.contains('open'))return;
+    if(e.key==='Escape'){e.preventDefault();closeDrawer();return}
+    if(e.key!=='Tab')return;
+    const focusable=[...drawer.querySelectorAll('button:not([disabled]):not([hidden]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(el=>!el.closest('[hidden]'));
+    if(!focusable.length)return;
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  });
 
   const style=document.createElement('style');style.id='hot100ToolsStyles';style.textContent=`
   .topbar .utilityMenu,.topbar #resetBtn,.topbar #mobileInstallBtn{display:none!important}
@@ -68,5 +87,5 @@ function mount(){
   `;document.head.appendChild(style);
   window.dispatchEvent(new CustomEvent('hot100toolsready'));
 }
-mount();
+mount();window.HOT100_MOBILE_TOOLS={open:openDrawer,close:closeDrawer};
 })();

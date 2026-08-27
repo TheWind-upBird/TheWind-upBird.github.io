@@ -1,13 +1,13 @@
-const CACHE='hot100-shell-v45';
+const CACHE='hot100-shell-v50';
 const SHELL=[
   './','./index.html','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg','./wa2-winter-scene.svg','./theme-bootstrap.js','./release-config.js','./release-guard-pass.js',
   './privacy.html','./terms.html','./beta-guide.html','./legal.css','./SolveShift-Beta-Release-Checklist.md','./SECURITY.md',
   './curriculum-1.js','./curriculum-2.js','./curriculum-3.js','./curriculum-4.js','./curriculum-5.js','./curriculum-6.js',
-  './handcrafted-patterns.js','./lesson-overrides.js','./beginner-intuition.js',
+  './handcrafted-patterns.js','./lesson-overrides.js','./beginner-intuition.js','./beginner-intuition-ui.js',
   './handcrafted-2-10.js','./handcrafted-11-20.js','./handcrafted-21-30.js',
   './hot100-31-32.js','./hot100-33-34.js','./hot100-35-40.js','./hot100-41-45.js','./hot100-46-50.js',
   './hot100-51-60.js','./hot100-61-70.js','./hot100-71-80.js','./hot100-91-100.js','./hot100-81-90.js',
-  './quality-2-30-pass.js','./content-integrity-pass.js','./calendar-utils.js','./engine-state.js','./analytics-pass.js','./engine-cards.js','./python-worker.js','./python-extra.js','./editor-runtime.js',
+  './quality-2-30-pass.js','./content-integrity-pass.js','./content-schema-v1.js','./calendar-utils.js','./engine-state.js','./analytics-pass.js','./engine-cards.js','./python-worker.js','./python-extra.js','./editor-runtime.js',
   './handcrafted-cards.js','./quality-pass.js','./quality-content-pass.js','./two-sum-cards.js','./engine-ui.js',
   './product-pass.js','./utility-pass.js','./practice-snapshot-pass.js','./adaptive-mode-pass.js','./adaptive-compat-pass.js',
   './mobile-install-fix.js','./theme-pass.js','./wa2-design-pass.js','./wa2-polish-pass.js','./wa2-art-fix.js','./mobile-tools-drawer.js','./wa2-motion-pass.js','./ui-polish-pass.js',

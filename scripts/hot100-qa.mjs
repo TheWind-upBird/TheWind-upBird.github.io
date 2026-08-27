@@ -11,10 +11,10 @@ const dataFiles = [
   'handcrafted-2-10.js','handcrafted-11-20.js','handcrafted-21-30.js',
   'hot100-31-32.js','hot100-33-34.js','hot100-35-40.js','hot100-41-45.js','hot100-46-50.js',
   'hot100-51-60.js','hot100-61-70.js','hot100-71-80.js','hot100-81-90.js','hot100-91-100.js',
-  'quality-2-30-pass.js','content-integrity-pass.js','python-extra.js'
+  'quality-2-30-pass.js','content-integrity-pass.js','python-extra.js','content-schema-v1.js'
 ];
 const runtimeFiles = [
-  'engine-state.js','engine-cards.js','editor-runtime.js','handcrafted-cards.js',
+  'engine-state.js','engine-cards.js','beginner-intuition-ui.js','editor-runtime.js','handcrafted-cards.js',
   'quality-pass.js','quality-content-pass.js','two-sum-cards.js','engine-ui.js','product-pass.js',
   'utility-pass.js','practice-snapshot-pass.js','adaptive-mode-pass.js','adaptive-compat-pass.js','sw.js'
 ];
@@ -57,11 +57,30 @@ const ps = w.HOT100_CURRICULUM || [];
 const lessons = w.HOT100_LESSONS || {};
 const intros = w.HOT100_BEGINNER_INTUITION || {};
 const handcrafted = w.HOT100_HANDCRAFTED || {};
+const content = w.SOLVESHIFT_CONTENT;
 const errors = [];
 const warnings = [];
 const fail = msg => errors.push(msg);
 const warn = msg => warnings.push(msg);
 const nonEmpty = x => typeof x === 'string' && x.trim().length > 0;
+
+if (!content || content.schemaVersion !== '1.0.0') fail('versioned content schema v1 is missing');
+else {
+  const expected = ['group-anagrams','longest-consecutive-sequence','move-zeroes'];
+  if (content.records.length !== expected.length) fail(`content schema records = ${content.records.length}, expected ${expected.length}`);
+  for (const slug of expected) {
+    const record = content.get(slug);
+    if (!record || record.problem?.slug !== slug) fail(`content schema missing ${slug}`);
+    else {
+      if (record.id !== `hot100:${slug}` || record.track?.id !== 'hot100' || !Number.isInteger(record.track?.position)) fail(`${slug} invalid schema identity`);
+      if (!record.teaching?.intro || !record.teaching?.lesson || !record.teaching?.cards) fail(`${slug} incomplete structured teaching content`);
+      if (record.editorial?.reviewStatus !== 'beta-internal' || !record.editorial?.contentVersion || !record.editorial?.sourceKind || !record.editorial?.rightsStatus) fail(`${slug} incomplete editorial metadata`);
+      if (record.migration?.status !== 'runtime-canonical') fail(`${slug} is not runtime-canonical`);
+      if (ps.find(problem => problem.slug === slug) !== record.problem) fail(`${slug} runtime curriculum is not using the schema record`);
+      if (lessons[slug] !== record.teaching.lesson || intros[slug] !== record.teaching.intro || handcrafted[slug] !== record.teaching.cards) fail(`${slug} runtime teaching fragments are not using the schema record`);
+    }
+  }
+}
 
 if (ps.length !== 100) fail(`curriculum length = ${ps.length}, expected 100`);
 const seen = new Set();
@@ -132,8 +151,16 @@ for (const p of tested) {
   if (!String(p.judge).includes('check(')) fail(`${p.slug} judge has no check()`);
 }
 
-if (indexSource.indexOf('src="./beginner-intuition.js"') < indexSource.indexOf('src="./engine-cards.js"')) {
-  console.error('beginner-intuition.js must load after engine-cards.js so its buildCards enhancement is active.');
+if (indexSource.indexOf('src="./beginner-intuition.js"') > indexSource.indexOf('src="./quality-2-30-pass.js"')) {
+  console.error('beginner-intuition.js data must load before quality-2-30-pass.js.');
+  process.exit(1);
+}
+if (indexSource.indexOf('src="./beginner-intuition-ui.js"') < indexSource.indexOf('src="./engine-cards.js"')) {
+  console.error('beginner-intuition-ui.js must load after engine-cards.js.');
+  process.exit(1);
+}
+if (indexSource.indexOf('src="./content-schema-v1.js"') < indexSource.indexOf('src="./beginner-intuition-ui.js"') || indexSource.indexOf('src="./content-schema-v1.js"') > indexSource.indexOf('src="./handcrafted-cards.js"')) {
+  console.error('content-schema-v1.js must load after all teaching fragments and before handcrafted-cards.js.');
   process.exit(1);
 }
 

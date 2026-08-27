@@ -1,7 +1,7 @@
 {
   "name": "SolveShift",
   "short_name": "SolveShift",
-  "description": "Interactive coding interview learning, practice and review.",
+  "description": "面向 LeetCode Hot 100 的渐进式编程学习、练习与复习工具。",
   "lang": "zh-CN",
   "id": "./",
   "start_url": "./",

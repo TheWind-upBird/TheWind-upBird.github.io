@@ -41,10 +41,10 @@ ok(index.indexOf('src="./study-modes.js"')>index.indexOf('src="./product-shell.j
 ok(index.indexOf('src="./product-library.js"')>index.indexOf('src="./study-modes.js"'),'product-library.js must load after study modes');
 ok(index.indexOf('src="./mastery-pass.js"')>index.indexOf('src="./product-library.js"'),'mastery-pass.js must load after product library');
 ok(!index.includes('随着熟练度提高，提示会逐渐减少'),'static UI must not promise automatic prompt fading');
-ok(index.includes('<title>SolveShift</title>')&&index.includes('<b>SolveShift</b>'),'visible app brand must be SolveShift');
+ok(index.includes('<title>SolveShift — Hot 100 编程学习与复习</title>')&&index.includes('<b>SolveShift</b>'),'visible app brand and document purpose must identify SolveShift');
 ok(!index.includes('Hot100 Learning Lab')&&!index.includes('<b>Hot100 Lab</b>'),'legacy Hot100 app branding must not remain in visible shell');
 ok(manifest.name==='SolveShift'&&manifest.short_name==='SolveShift','PWA manifest must use SolveShift brand');
-ok(sw.includes("CACHE='hot100-shell-v45'"),'service worker cache version must be v45');
+ok(sw.includes("CACHE='hot100-shell-v50'"),'service worker cache version must be v50');
 ok(sw.includes("'./study-modes.js'")&&sw.includes("'./product-library.js'")&&sw.includes("'./mastery-pass.js'")&&sw.includes("'./wa2-art-fix.js'"),'service worker must cache study modes, pattern library, mastery and WA2 artwork loader');
 
 console.log('SolveShift study modes QA passed: user-controlled modes preserve all eight cards, mastery requires evidence beyond self-rating, and the product layers remain event-driven.');

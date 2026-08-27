@@ -37,8 +37,9 @@ function bindHandChoice(prefix, q, fbId, expId){
 }
 
 function buildHandcraftedCards(p,cfg){
-  const intro=(window.HOT100_BEGINNER_INTUITION||{})[p.slug]||{};
-  const lesson=lessonFor(p);
+  const record=window.SOLVESHIFT_CONTENT?.get(p.slug);
+  const intro=record?.teaching.intro||(window.HOT100_BEGINNER_INTUITION||{})[p.slug]||{};
+  const lesson=record?.teaching.lesson||lessonFor(p);
   const fill=handcraftedFill(p,cfg);
   return [
     {
@@ -134,6 +135,6 @@ function buildHandcraftedCards(p,cfg){
 }
 
 buildCards=function(p){
-  const cfg=(window.HOT100_HANDCRAFTED||{})[p.slug];
+  const cfg=window.SOLVESHIFT_CONTENT?.get(p.slug)?.teaching.cards||(window.HOT100_HANDCRAFTED||{})[p.slug];
   return cfg?buildHandcraftedCards(p,cfg):handcraftedBaseBuilder(p);
 };

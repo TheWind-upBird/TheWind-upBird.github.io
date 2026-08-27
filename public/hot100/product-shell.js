@@ -48,7 +48,7 @@ function renderToday(force=false){
 function option(value,label,current,name,disabled=false){return `<button type="button" class="onboardOption ${current===value?'selected':''}" data-profile-field="${name}" data-profile-value="${value}" ${disabled?'disabled':''}>${escHtml(label)}</button>`}
 function onboardingMarkup(draft,firstRun){
   const isEn=draft.locale==='en-US',t=k=>Profile.t(k,draft.locale);
-  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard" role="dialog" aria-modal="true" aria-label="${escHtml(t('settings'))}"><div class="onboardTop"><div><small>${firstRun?(isEn?'WELCOME':'欢迎'):isEn?'LEARNING PROFILE':'学习档案'}</small><h2>${isEn?'Build a path that fits you.':'先让路线适合你。'}</h2><p>${isEn?'Choose your goal and available time. While solving, switch freely between Learn, Practice, and Interview.':'选择目标和每天能投入的时间。做题时可以随时切换学习、刷题和面试模式。'}</p></div><button class="round onboardClose" type="button" aria-label="${isEn?'Close':'关闭'}">×</button></div>
+  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard" role="dialog" aria-modal="true" aria-labelledby="productOnboardingTitle" tabindex="-1"><div class="onboardTop"><div><small>${firstRun?(isEn?'WELCOME':'欢迎'):isEn?'LEARNING PROFILE':'学习档案'}</small><h2 id="productOnboardingTitle">${isEn?'Build a path that fits you.':'先让路线适合你。'}</h2><p>${isEn?'Choose your goal and available time. While solving, switch freely between Learn, Practice, and Interview.':'选择目标和每天能投入的时间。做题时可以随时切换学习、刷题和面试模式。'}</p></div><button class="round onboardClose" type="button" aria-label="${isEn?'Close':'关闭'}">×</button></div>
   <div class="onboardField"><b>${t('goal')}</b><div class="onboardOptions">${option('internship',t('goalInternship'),draft.goal,'goal')}${option('campus',t('goalCampus'),draft.goal,'goal')}${option('switch',t('goalSwitch'),draft.goal,'goal')}${option('general',t('goalGeneral'),draft.goal,'goal')}</div></div>
   <div class="onboardField"><b>${t('level')}</b><div class="onboardOptions vertical">${option('beginner',t('levelBeginner'),draft.level,'level')}${option('developing',t('levelDeveloping'),draft.level,'level')}${option('interview',t('levelInterview'),draft.level,'level')}</div></div>
   <div class="onboardField"><b>${t('daily')}</b><div class="onboardOptions">${[10,20,30,60].map(x=>option(String(x),t('minute'+x),String(draft.dailyMinutes),'dailyMinutes')).join('')}</div></div>
@@ -67,7 +67,7 @@ function diagnosticQuestionMarkup(q,answers,isEn,index){
 }
 function diagnosticMarkup(draft,answers){
   const isEn=draft.locale==='en-US',complete=DIAGNOSTIC.every(q=>answers[q.id]);
-  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard diagnosticCard" role="dialog" aria-modal="true" aria-label="${isEn?'Starting-point check':'起点诊断'}"><div class="onboardTop"><div><small>${isEn?'60-SECOND CHECK':'60 秒起点诊断'}</small><h2>${isEn?'Try one before we choose a start.':'先试一题，再决定从哪里开始。'}</h2><p>${isEn?'This is not an exam. It only changes the recommended starting step, and you can switch modes at any time.':'这不是考试，只会改变推荐起点；进入课程后仍可随时切换学习、刷题或面试模式。'}</p></div><button class="round onboardClose" type="button" aria-label="${isEn?'Close':'关闭'}">×</button></div><div class="diagnosticQuestions">${DIAGNOSTIC.map((q,i)=>diagnosticQuestionMarkup(q,answers,isEn,i)).join('')}</div><div class="onboardActions"><button class="secondary diagnosticSkip" type="button">${isEn?'Skip; use my self-rating':'跳过，按自评推荐'}</button><button class="primary diagnosticSubmit" type="button" ${complete?'':'disabled'}>${isEn?'See my starting point':'查看我的起点'}</button></div></section>`
+  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard diagnosticCard" role="dialog" aria-modal="true" aria-labelledby="productOnboardingTitle" tabindex="-1"><div class="onboardTop"><div><small>${isEn?'60-SECOND CHECK':'60 秒起点诊断'}</small><h2 id="productOnboardingTitle">${isEn?'Try one before we choose a start.':'先试一题，再决定从哪里开始。'}</h2><p>${isEn?'This is not an exam. It only changes the recommended starting step, and you can switch modes at any time.':'这不是考试，只会改变推荐起点；进入课程后仍可随时切换学习、刷题或面试模式。'}</p></div><button class="round onboardClose" type="button" aria-label="${isEn?'Close':'关闭'}">×</button></div><div class="diagnosticQuestions">${DIAGNOSTIC.map((q,i)=>diagnosticQuestionMarkup(q,answers,isEn,i)).join('')}</div><div class="onboardActions"><button class="secondary diagnosticSkip" type="button">${isEn?'Skip; use my self-rating':'跳过，按自评推荐'}</button><button class="primary diagnosticSubmit" type="button" ${complete?'':'disabled'}>${isEn?'See my starting point':'查看我的起点'}</button></div></section>`
 }
 function diagnosticResultMarkup(draft,result){
   const isEn=draft.locale==='en-US',copy={
@@ -75,43 +75,46 @@ function diagnosticResultMarkup(draft,result){
     implementation:{zh:['思路已有，先把它稳定写成代码','从代码补空开始，补齐 need、查询和记录三个关键位置，再进入完整编程。'],en:['You have the idea; make the implementation reliable','Start with code completion, then move into the full editor.']},
     'practice-ready':{zh:['可以直接尝试独立写出','从刷题模式开始；如果卡住，随时切回学习模式，不会丢失代码。'],en:['You are ready for an independent attempt','Start in Practice. You can switch back to Learn at any time without losing code.']}
   }[result.band][isEn?'en':'zh'],source=result.skipped?(isEn?'Based on your self-rating':'根据你的自评'):(isEn?`${result.score} / ${DIAGNOSTIC.length} correct`:`答对 ${result.score} / ${DIAGNOSTIC.length}`);
-  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard diagnosticResultCard" role="dialog" aria-modal="true" aria-label="${isEn?'Recommended starting point':'推荐起点'}"><div class="onboardTop"><div><small>${isEn?'YOUR STARTING POINT':'你的推荐起点'}</small><h2>${escHtml(copy[0])}</h2></div><button class="round onboardClose" type="button" aria-label="${isEn?'Close':'关闭'}">×</button></div><div class="diagnosticResult" role="status"><span>${escHtml(source)}</span><p>${escHtml(copy[1])}</p><small>${isEn?'The route adapts from future run, hint, recall, and review evidence—not this check alone.':'之后会继续根据运行、提示、回忆和复习证据调整，不会只靠这一次诊断。'}</small></div><div class="onboardActions"><button class="secondary diagnosticRetry" type="button">${isEn?'Try again':'重新测试'}</button><button class="primary diagnosticEnter" type="button">${isEn?'Enter my starting point':'进入我的起点'}</button></div></section>`
+  return `<div class="productOnboardingScrim"></div><section class="productOnboardingCard diagnosticResultCard" role="dialog" aria-modal="true" aria-labelledby="productOnboardingTitle" tabindex="-1"><div class="onboardTop"><div><small>${isEn?'YOUR STARTING POINT':'你的推荐起点'}</small><h2 id="productOnboardingTitle">${escHtml(copy[0])}</h2></div><button class="round onboardClose" type="button" aria-label="${isEn?'Close':'关闭'}">×</button></div><div class="diagnosticResult" role="status"><span>${escHtml(source)}</span><p>${escHtml(copy[1])}</p><small>${isEn?'The route adapts from future run, hint, recall, and review evidence—not this check alone.':'之后会继续根据运行、提示、回忆和复习证据调整，不会只靠这一次诊断。'}</small></div><div class="onboardActions"><button class="secondary diagnosticRetry" type="button">${isEn?'Try again':'重新测试'}</button><button class="primary diagnosticEnter" type="button">${isEn?'Enter my starting point':'进入我的起点'}</button></div></section>`
 }
 function openOnboarding(firstRun=false){
   if(firstRun)window.HOT100_ANALYTICS?.trackOnce('onboarding_start','first-run',{source:'first-run'});
   document.getElementById('productOnboarding')?.remove();
   const previousFocus=document.activeElement,overlay=document.createElement('div');overlay.id='productOnboarding';overlay.className='productOnboarding';document.body.appendChild(overlay);document.body.classList.add('productModalOpen');
   const draft={...Profile.get()},answers={};let step='profile',result=null;
-  const close=()=>{overlay.remove();document.body.classList.remove('productModalOpen');previousFocus?.focus?.()};
-  overlay.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
-  function paint(){
+  let modalAccess=null;
+  const close=()=>{modalAccess?.release?.();overlay.remove();document.body.classList.remove('productModalOpen');if(!modalAccess)previousFocus?.focus?.()};
+  function paint(focusSelector=''){
     overlay.innerHTML=step==='diagnostic'?diagnosticMarkup(draft,answers):step==='result'?diagnosticResultMarkup(draft,result):onboardingMarkup(draft,firstRun);
+    if(focusSelector)requestAnimationFrame(()=>overlay.querySelector(focusSelector)?.focus?.());
     overlay.querySelector('.onboardClose')?.addEventListener('click',close);
     if(step==='diagnostic'){
-      overlay.querySelectorAll('[data-diagnostic-question]').forEach(btn=>btn.addEventListener('click',()=>{answers[btn.dataset.diagnosticQuestion]=btn.dataset.diagnosticValue;paint()}));
-      overlay.querySelector('.diagnosticSkip')?.addEventListener('click',()=>{result={band:selfReportedBand(draft.level),score:null,skipped:true};window.HOT100_ANALYTICS?.track('diagnostic_complete',{band:result.band,skipped:true});step='result';paint()});
-      overlay.querySelector('.diagnosticSubmit')?.addEventListener('click',()=>{result={...diagnosticBand(answers),skipped:false};window.HOT100_ANALYTICS?.track('diagnostic_complete',{band:result.band,score:result.score,skipped:false});step='result';paint()});
+      overlay.querySelectorAll('[data-diagnostic-question]').forEach(btn=>btn.addEventListener('click',()=>{const selector=`[data-diagnostic-question="${btn.dataset.diagnosticQuestion}"][data-diagnostic-value="${btn.dataset.diagnosticValue}"]`;answers[btn.dataset.diagnosticQuestion]=btn.dataset.diagnosticValue;paint(selector)}));
+      overlay.querySelector('.diagnosticSkip')?.addEventListener('click',()=>{result={band:selfReportedBand(draft.level),score:null,skipped:true};window.HOT100_ANALYTICS?.track('diagnostic_complete',{band:result.band,skipped:true});step='result';paint('.productOnboardingCard')});
+      overlay.querySelector('.diagnosticSubmit')?.addEventListener('click',()=>{result={...diagnosticBand(answers),skipped:false};window.HOT100_ANALYTICS?.track('diagnostic_complete',{band:result.band,score:result.score,skipped:false});step='result';paint('.productOnboardingCard')});
       return
     }
     if(step==='result'){
-      overlay.querySelector('.diagnosticRetry')?.addEventListener('click',()=>{for(const key of Object.keys(answers))delete answers[key];result=null;window.HOT100_ANALYTICS?.track('diagnostic_start',{source:'retry'});step='diagnostic';paint()});
+      overlay.querySelector('.diagnosticRetry')?.addEventListener('click',()=>{for(const key of Object.keys(answers))delete answers[key];result=null;window.HOT100_ANALYTICS?.track('diagnostic_start',{source:'retry'});step='diagnostic';paint('.productOnboardingCard')});
       overlay.querySelector('.diagnosticEnter')?.addEventListener('click',()=>{Profile.update({...draft,onboardingComplete:true,diagnosticVersion:1,diagnosticBand:result.band,diagnosticScore:result.score,diagnosticSkipped:result.skipped,diagnosticCompletedAt:new Date().toISOString()});window.HOT100_ANALYTICS?.track('onboarding_complete',{source:'diagnostic',band:result.band});close();setTimeout(()=>startRecommendedEntry(result.band),0)});
       return
     }
-    overlay.querySelectorAll('[data-profile-field]:not([disabled])').forEach(btn=>btn.addEventListener('click',()=>{const field=btn.dataset.profileField;let value=btn.dataset.profileValue;if(field==='dailyMinutes')value=Number(value);draft[field]=value;paint()}));
+    overlay.querySelectorAll('[data-profile-field]:not([disabled])').forEach(btn=>btn.addEventListener('click',()=>{const field=btn.dataset.profileField,rawValue=btn.dataset.profileValue,selector=`[data-profile-field="${field}"][data-profile-value="${rawValue}"]`;let value=rawValue;if(field==='dailyMinutes')value=Number(value);draft[field]=value;paint(selector)}));
     overlay.querySelector('.onboardCancel')?.addEventListener('click',close);
     overlay.querySelector('.productOnboardingScrim')?.addEventListener('click',()=>{if(!firstRun)close()});
-    overlay.querySelector('.onboardSave')?.addEventListener('click',()=>{if(firstRun){window.HOT100_ANALYTICS?.track('diagnostic_start',{source:'first-run'});step='diagnostic';paint();return}Profile.update({...draft});close()});
+    overlay.querySelector('.onboardSave')?.addEventListener('click',()=>{if(firstRun){window.HOT100_ANALYTICS?.track('diagnostic_start',{source:'first-run'});step='diagnostic';paint('.productOnboardingCard');return}Profile.update({...draft});close()});
   }
   paint();
+  modalAccess=window.HOT100_ACCESSIBILITY?.activateModal?.(overlay,{onEscape:close,initialFocus:'.productOnboardingCard'});if(!modalAccess){overlay.addEventListener('keydown',event=>{if(event.key==='Escape')close()});overlay.querySelector('.productOnboardingCard')?.focus?.()}
 }
 function mountSettingsInDrawer(){
   const panel=document.querySelector('.mobileToolsPanel');if(!panel||document.getElementById('productLearningSettings'))return;
   const group=document.createElement('section');group.className='mobileToolsGroup productSettingsGroup';group.innerHTML=`<div class="mobileToolsLabel">${locale()==='en-US'?'Learning':'学习'}</div><button class="mobileToolRow" id="productLearningSettings" type="button"><span class="toolIcon">◎</span><span><b>${locale()==='en-US'?'Learning settings':'学习设置'}</b><small>${locale()==='en-US'?'Goal, daily time, course and coding language':'目标、每天时间、课程语言与编程语言'}</small></span><em>›</em></button>`;
   panel.querySelector('.mobileToolsStats')?.insertAdjacentElement('afterend',group);
-  group.querySelector('button')?.addEventListener('click',()=>{document.getElementById('mobileToolsDrawer')?.classList.remove('open');document.body.classList.remove('toolsOpen');openOnboarding(false)});
+  group.querySelector('button')?.addEventListener('click',()=>{closeToolsBeforeModal();openOnboarding(false)});
 }
 function refreshSettingsInDrawer(){const old=document.querySelector('.productSettingsGroup');if(old)old.remove();mountSettingsInDrawer()}
+function closeToolsBeforeModal(){window.HOT100_MOBILE_TOOLS?.close?.(false);document.getElementById('mobileToolsBtn')?.focus?.()}
 function applyProductCopy(){
   const isEn=locale()==='en-US';
   const problemSub=document.querySelector('#page-problems>.subtitle');if(problemSub)problemSub.textContent=isEn?'Browse by Pattern and choose Learn, Practice, or Interview for any problem.':'按知识点组织题目；每道题都可以选择学习、刷题或面试模式。';
@@ -134,6 +137,7 @@ document.head.appendChild(style);
 hookPageEvents();applyProductCopy();renderToday(true);mountSettingsInDrawer();
 window.addEventListener('hot100toolsready',mountSettingsInDrawer);
 window.addEventListener('hot100profilechange',()=>{lastTodaySignature='';applyProductCopy();refreshSettingsInDrawer();renderToday(true)});
-setTimeout(()=>{if(!Profile.get().onboardingComplete)openOnboarding(true)},450);
+const mountFirstRun=()=>{if(!Profile.get().onboardingComplete)openOnboarding(true)};
+if(document.readyState!=='complete')document.addEventListener('DOMContentLoaded',mountFirstRun,{once:true});else requestAnimationFrame(mountFirstRun);
 window.HOT100_PRODUCT_SHELL={renderToday,openOnboarding,mountSettingsInDrawer,taskMode,recommendedTaskMode,openTask,startFirstTask,mode:'event-driven'};
 })();
