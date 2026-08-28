@@ -13,6 +13,7 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
@@ -22,7 +23,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Gate SolveShift content before Pages build
-        run: npm run qa:hot100
+        run: npm run release:check
   build:
     needs: quality
     runs-on: ubuntu-latest
